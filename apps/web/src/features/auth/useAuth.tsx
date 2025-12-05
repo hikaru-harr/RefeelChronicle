@@ -6,8 +6,10 @@ const useAuth = () => {
     const handleLogin = async ({ email, password }: { email: string, password: string }) => {
         try {
             await signInWithEmailAndPassword(auth, email, password);
+            return true
         } catch (error) {
             console.error("Error logging in:", error);
+            return false
         }
     };
     return ({ handleLogin })
