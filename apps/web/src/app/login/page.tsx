@@ -1,7 +1,7 @@
 'use client'
 
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Form,
@@ -13,51 +13,19 @@ import {
 } from "@/components/ui/form"
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import useAuth from '@/features/auth/useAuth'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import useAuth, { loginFormSchema, LoginFormSchema } from '@/features/auth/useAuth'
 import { LoaderCircle } from 'lucide-react'
-
-const loginFormSchema = z.object({
-  email: z.email(),
-  password: z.string().min(8),
-})
 
 
 function page() {
-  const router = useRouter()
-  const { handleLogin } = useAuth()
-  const loginForm = useForm<z.infer<typeof loginFormSchema>>({
+  
+  const { requestState, onSubmit } = useAuth()
+
+  const loginForm = useForm<LoginFormSchema>({
     resolver: zodResolver(loginFormSchema),
   })
 
-  const [requestState, setRequestState] = useState<{
-    isLoading: boolean,
-    error: boolean | null,
-  }>({
-    isLoading: false,
-    error: null,
-  })
 
-  const onSubmit = async (data: z.infer<typeof loginFormSchema>) => {
-    setRequestState({
-      isLoading: true,
-      error: null,
-    })
-    const result = await handleLogin(data)
-    if (!result) {
-      setRequestState({
-        isLoading: false,
-        error: true,
-      })
-      return
-    }
-    router.push('/')
-    setRequestState({
-      isLoading: true,
-      error: null,
-    })
-  }
 
   return (
     <div className='w-screen h-screen flex flex-col justify-center items-center'>
