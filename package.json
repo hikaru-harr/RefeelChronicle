@@ -1,0 +1,19 @@
+{
+	"name": "refeel-chronicle",
+	"private": true,
+	"version": "0.1.0",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"biome:format": "pnpm exec biome format --write",
+		"biome:lint": "pnpm exec biome lint --write",
+		"biome:check": "pnpm exec biome check --write",
+		"typecheck": "pnpm --filter web typecheck && pnpm --filter api typecheck"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"packageManager": "pnpm@10.20.0",
+	"devDependencies": {
+		"@biomejs/biome": "2.3.8"
+	}
+}
