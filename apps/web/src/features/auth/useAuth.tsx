@@ -24,11 +24,13 @@ const useAuth = () => {
 
     const handleLogin = async ({ email, password }: { email: string, password: string }) => {
         try {
-            await signInWithEmailAndPassword(auth, email, password);
+            const result = await signInWithEmailAndPassword(auth, email, password);
+            const jwtToken = await result.user.getIdToken()
+            localStorage.setItem('jwtToken', jwtToken);
             return true
         } catch (error) {
             console.error("Error logging in:", error);
-            return false
+            return null
         }
     };
 
@@ -45,7 +47,8 @@ const useAuth = () => {
             })
             return
         }
-        router.push('/files')
+        console.log(result)
+        // router.push('/files')
         setRequestState({
             isLoading: true,
             error: null,
