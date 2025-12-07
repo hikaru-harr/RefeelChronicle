@@ -27,7 +27,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <header className="h-12 flex items-center justify-center">
+          <h1 className="text-2xl font-black">Refeel Chronicle</ h1>
+        </header>
+        <div className="p-4">
+          {children}
+        </div>
       </body>
     </html>
   );

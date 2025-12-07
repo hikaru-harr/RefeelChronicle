@@ -13,7 +13,7 @@ export type LoginFormSchema = z.infer<typeof loginFormSchema>
 
 const useAuth = () => {
     const router = useRouter()
-    
+
     const [requestState, setRequestState] = useState<{
         isLoading: boolean,
         error: boolean | null,
@@ -45,7 +45,7 @@ const useAuth = () => {
             })
             return
         }
-        router.push('/')
+        router.push('/files')
         setRequestState({
             isLoading: true,
             error: null,
