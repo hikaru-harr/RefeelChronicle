@@ -16,6 +16,7 @@
   "packageManager": "pnpm@10.20.0",
   "dependencies": {
     "@hono/node-server": "^1.19.6",
+    "firebase-admin": "^13.6.0",
     "hono": "^4.10.7"
   },
   "devDependencies": {
