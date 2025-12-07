@@ -17,6 +17,9 @@ importers:
       '@hono/node-server':
         specifier: ^1.19.6
         version: 1.19.6(hono@4.10.7)
+      dotenv:
+        specifier: ^17.2.3
+        version: 17.2.3
       firebase-admin:
         specifier: ^13.6.0
         version: 13.6.0
@@ -24,6 +27,9 @@ importers:
         specifier: ^4.10.7
         version: 4.10.7
     devDependencies:
+      '@types/node':
+        specifier: ^20.19.25
+        version: 20.19.25
       tsx:
         specifier: ^4.21.0
         version: 4.21.0
@@ -1116,6 +1122,10 @@ packages:
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
+
+  dotenv@17.2.3:
+    resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
+    engines: {node: '>=12'}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -2689,6 +2699,8 @@ snapshots:
     optional: true
 
   detect-libc@2.1.2: {}
+
+  dotenv@17.2.3: {}
 
   dunder-proto@1.0.1:
     dependencies:
