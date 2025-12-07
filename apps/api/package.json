@@ -1,28 +1,28 @@
 {
-  "name": "@refeel-chronicle/api",
-  "version": "0.1.0",
-  "private": true,
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/server.ts",
-    "build": "tsc -p tsconfig.json",
-    "start": "node dist/server.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.20.0",
-  "dependencies": {
-    "@hono/node-server": "^1.19.6",
-    "dotenv": "^17.2.3",
-    "firebase-admin": "^13.6.0",
-    "hono": "^4.10.7"
-  },
-  "devDependencies": {
-    "@types/node": "^20.19.25",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
-  }
+	"name": "@refeel-chronicle/api",
+	"version": "0.1.0",
+	"private": true,
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"dev": "tsx watch src/server.ts",
+		"build": "tsc -p tsconfig.json",
+		"start": "node dist/server.js"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"packageManager": "pnpm@10.20.0",
+	"dependencies": {
+		"@hono/node-server": "^1.19.6",
+		"dotenv": "^17.2.3",
+		"firebase-admin": "^13.6.0",
+		"hono": "^4.10.7"
+	},
+	"devDependencies": {
+		"@types/node": "^20.19.25",
+		"tsx": "^4.21.0",
+		"typescript": "^5.9.3"
+	}
 }
