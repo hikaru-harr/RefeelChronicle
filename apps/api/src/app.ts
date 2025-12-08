@@ -1,5 +1,7 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { authMiddleware } from "./core/http/middleware";
+import { fileRouter } from "./routes/files";
 
 export type AppEnv = {
 	Variables: {
@@ -9,7 +11,13 @@ export type AppEnv = {
 
 export const app = new Hono<AppEnv>();
 
+app.use(
+	"*",
+	cors({ origin: ["http://localhost:3001"] }),
+);
+
 app.use("*", authMiddleware);
+app.route("/api/files", fileRouter)
 
 app.get("/health", (c) => {
 	return c.json({
