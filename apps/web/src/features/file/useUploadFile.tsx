@@ -1,7 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+interface FileItem {
+	key: string;
+	previewUrl: string;
+}
 
 const useUploadFile = () => {
 	const [isUploading, setIsUploading] = useState(false);
+	const [files, setFiles] = useState<FileItem[]>([]);
 
 	const getPreSignedUrl = async (file: File) => {
 		try {
@@ -48,6 +54,7 @@ const useUploadFile = () => {
 		}
 		let flag = true;
 		const errorList = [];
+		const uploadFileList: FileItem[] = [];
 		for (const file of fileList) {
 			const preSignedUrl = await getPreSignedUrl(file);
 			if (!preSignedUrl) {
@@ -65,15 +72,39 @@ const useUploadFile = () => {
 					fileName: file.name,
 					error: "Failed to upload file",
 				});
+				continue;
 			}
+			uploadFileList.push({
+				key: file.name,
+				previewUrl: URL.createObjectURL(file),
+			});
 		}
 		if (!flag) {
 			console.log("errorList", errorList);
 		}
+		setFiles((prev) => [...uploadFileList, ...prev]);
 
 		setIsUploading(false);
 	};
+
+	useEffect(() => {
+		console.log("useEffect");
+		const init = async () => {
+			const result = await fetch("http://localhost:3000/api/files", {
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: "Bearer " + localStorage.getItem("jwtToken"),
+				},
+			});
+			const data = await result.json();
+			setFiles(data.files);
+		};
+		init();
+	}, []);
+
 	return {
+		files,
 		isUploading,
 		handleSelectFiles,
 	};
