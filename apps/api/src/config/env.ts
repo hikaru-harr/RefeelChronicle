@@ -1,12 +1,12 @@
 import { z } from "zod";
 
 const envSchema = z.object({
-    BUCKET_REGION: z.string().min(1),
-    BUCKET_ENDPOINT: z.string().min(1),
-    BUCKET_ACCESS_KEY: z.string().min(1),
-    BUCKET_SECRET_KEY: z.string().min(1),
-    BUCKET_NAME: z.string().min(1),
-    FIREBASE_PROJECT_ID: z.string().min(1),
+	BUCKET_REGION: z.string().min(1),
+	BUCKET_ENDPOINT: z.string().min(1),
+	BUCKET_ACCESS_KEY: z.string().min(1),
+	BUCKET_SECRET_KEY: z.string().min(1),
+	BUCKET_NAME: z.string().min(1),
+	FIREBASE_PROJECT_ID: z.string().min(1),
 });
 
 const _env = envSchema.parse(process.env);

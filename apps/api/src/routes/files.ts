@@ -15,19 +15,22 @@ fileRouter.post(
 	"/pre-sign",
 	zValidator("json", preSignRequestSchema),
 	async (c) => {
-		const {userId} = c.var.currentUser;
+		const { userId } = c.var.currentUser;
 
 		const { fileName, fileType } = c.req.valid("json");
 
-        const {presignedUrl, key} = await createUploadPreSignedUrlUsecase({
-            fileName,
-            fileType,
-            userId: userId,
-        });
+		const { presignedUrl, key } = await createUploadPreSignedUrlUsecase({
+			fileName,
+			fileType,
+			userId: userId,
+		});
 
-		return c.json({
-			presignedUrl,
-            key
-		}, 200);
+		return c.json(
+			{
+				presignedUrl,
+				key,
+			},
+			200,
+		);
 	},
 );

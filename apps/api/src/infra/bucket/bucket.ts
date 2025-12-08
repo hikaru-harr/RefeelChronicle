@@ -1,5 +1,10 @@
 import { S3Client } from "@aws-sdk/client-s3";
-import { BUCKET_REGION, BUCKET_ENDPOINT, BUCKET_ACCESS_KEY, BUCKET_SECRET_KEY } from "../../config/env";
+import {
+	BUCKET_ACCESS_KEY,
+	BUCKET_ENDPOINT,
+	BUCKET_REGION,
+	BUCKET_SECRET_KEY,
+} from "../../config/env";
 
 export const s3 = new S3Client({
 	region: BUCKET_REGION,
