@@ -31,9 +31,7 @@ export default function RootLayout({
 				<header className="h-12 flex items-center justify-center bg-black text-white">
 					<h1 className="text-2xl font-black">Refeel Chronicle</h1>
 				</header>
-				<ScrollArea className="h-[calc(100vh-48px)] p-4 bg-red-200">
-				{children}
-				</ScrollArea>
+				<ScrollArea className="h-[calc(100vh-48px)] p-2">{children}</ScrollArea>
 			</body>
 		</html>
 	);

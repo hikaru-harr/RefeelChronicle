@@ -17,33 +17,28 @@ function page() {
 				method: "GET",
 				headers: {
 					"Content-Type": "application/json",
-					"Authorization": "Bearer " + localStorage.getItem("jwtToken"),
+					Authorization: "Bearer " + localStorage.getItem("jwtToken"),
 				},
 			});
 			const data = await result.json();
 			setFiles(data.files);
-		}
+		};
 		init();
-	}, [])
+	}, []);
 	return (
-		<div className="grid grid-cols-3 gap-4">
-			{
-				files.map((file) => (
-					<div
-  key={file.key}
-  className="relative aspect-square overflow-hidden"
->
-  <Image
-    src={file.previewUrl}
-    alt={file.key}
-    fill
-    className="object-cover"
-    sizes="(min-width: 768px) 33vw, 50vw"
-	unoptimized
-  />
-</div>
-				))
-			}
+		<div className="grid grid-cols-3">
+			{files.map((file) => (
+				<div key={file.key} className="relative aspect-square overflow-hidden">
+					<Image
+						src={file.previewUrl}
+						alt={file.key}
+						fill
+						className="object-cover"
+						sizes="(min-width: 768px) 33vw, 50vw"
+						unoptimized
+					/>
+				</div>
+			))}
 		</div>
 	);
 }

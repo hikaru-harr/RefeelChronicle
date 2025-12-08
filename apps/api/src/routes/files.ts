@@ -14,7 +14,7 @@ const preSignRequestSchema = z.object({
 
 fileRouter.get("/", async (c) => {
 	const { userId } = c.var.currentUser;
-	const files = await listFilesUsecase({userId});
+	const files = await listFilesUsecase({ userId });
 	return c.json({ files }, 200);
 });
 
