@@ -1,18 +1,54 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import useUploadFile from "@/features/file/useUploadFile";
+import useUploadFile, { type FileItem } from "@/features/file/useUploadFile";
 
 function page() {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const { isUploading, handleSelectFiles, files } = useUploadFile();
 
+	const [detailFile, setDetailFile] = useState<FileItem | null>(null);
+
 	return (
 		<div>
+			{detailFile && (
+				<Dialog open={!!detailFile} onOpenChange={() => setDetailFile(null)}>
+					<DialogContent className="h-screen w-screen" showCloseButton={false}>
+						<DialogHeader className="relative h-12 items-center justify-center z-50">
+							<Button
+								variant="ghost"
+								onClick={() => setDetailFile(null)}
+								className="absolute left-4"
+							>
+								<ArrowLeft />
+							</Button>
+							<DialogTitle>Detail</DialogTitle>
+						</DialogHeader>
+						<div className="fixed inset-0 flex items-center justify-center">
+							<div className="relative w-[100vw] h-[calc(100vh-12rem)]">
+								<Image
+									src={detailFile.previewUrl}
+									alt={detailFile.key}
+									fill
+									className="object-contain"
+									sizes="80vw"
+									unoptimized
+								/>
+							</div>
+						</div>
+					</DialogContent>
+				</Dialog>
+			)}
 			<div className="flex justify-center">
 				<Button
 					disabled={isUploading}
@@ -43,9 +79,13 @@ function page() {
 			</div>
 			<div className="grid grid-cols-3">
 				{files.map((file) => (
-					<div
+					<button
 						key={file.key}
 						className="relative aspect-square overflow-hidden"
+						type="button"
+						onClick={() =>
+							setDetailFile({ key: file.key, previewUrl: file.previewUrl })
+						}
 					>
 						<Image
 							src={file.previewUrl}
@@ -55,7 +95,7 @@ function page() {
 							sizes="(min-width: 768px) 33vw, 50vw"
 							unoptimized
 						/>
-					</div>
+					</button>
 				))}
 			</div>
 		</div>

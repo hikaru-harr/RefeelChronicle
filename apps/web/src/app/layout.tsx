@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -28,10 +27,7 @@ export default function RootLayout({
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
-				<header className="h-12 flex items-center justify-center bg-black text-white">
-					<h1 className="text-2xl font-black">Refeel Chronicle</h1>
-				</header>
-				<ScrollArea className="h-[calc(100vh-48px)] p-2">{children}</ScrollArea>
+				{children}
 			</body>
 		</html>
 	);
