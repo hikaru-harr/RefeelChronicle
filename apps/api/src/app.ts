@@ -11,13 +11,10 @@ export type AppEnv = {
 
 export const app = new Hono<AppEnv>();
 
-app.use(
-	"*",
-	cors({ origin: ["http://localhost:3001"] }),
-);
+app.use("*", cors({ origin: ["http://localhost:3001"] }));
 
 app.use("*", authMiddleware);
-app.route("/api/files", fileRouter)
+app.route("/api/files", fileRouter);
 
 app.get("/health", (c) => {
 	return c.json({

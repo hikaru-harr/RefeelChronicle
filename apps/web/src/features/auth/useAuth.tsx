@@ -54,7 +54,7 @@ const useAuth = () => {
 			return;
 		}
 		console.log(result);
-		router.push('/files')
+		router.push("/files");
 		setRequestState({
 			isLoading: true,
 			error: null,

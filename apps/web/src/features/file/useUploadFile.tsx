@@ -20,7 +20,7 @@ const useUploadFile = () => {
 			return data.presignedUrl;
 		} catch (error) {
 			console.error("getPreSignedUrl error", error);
-			return null
+			return null;
 		}
 	};
 
@@ -33,9 +33,9 @@ const useUploadFile = () => {
 			body: file,
 		});
 		if (!response.ok) {
-			return false
+			return false;
 		}
-		return true
+		return true;
 	};
 
 	const handleSelectFiles = async (files: FileList | File[]) => {
@@ -47,36 +47,36 @@ const useUploadFile = () => {
 			return;
 		}
 		let flag = true;
-		const errorList = []
+		const errorList = [];
 		for (const file of fileList) {
 			const preSignedUrl = await getPreSignedUrl(file);
-			if(!preSignedUrl) {
+			if (!preSignedUrl) {
 				flag = false;
 				errorList.push({
 					fileName: file.name,
 					error: "Failed to get pre-signed URL",
-				})
+				});
 				continue;
-			};
+			}
 			const uploadResult = await uploadFile(preSignedUrl, file);
-			if(!uploadResult) {
+			if (!uploadResult) {
 				flag = false;
 				errorList.push({
 					fileName: file.name,
 					error: "Failed to upload file",
-				})
+				});
 			}
 		}
-		if(!flag) {
-			console.log("errorList", errorList)
-		};
+		if (!flag) {
+			console.log("errorList", errorList);
+		}
 
 		setIsUploading(false);
 	};
-	return ({
+	return {
 		isUploading,
-		handleSelectFiles
-	})
+		handleSelectFiles,
+	};
 };
 
 export default useUploadFile;

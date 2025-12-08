@@ -5,9 +5,9 @@ import { auth } from "../../infra/auth/firebase";
 type AppContext = Context<AppEnv>;
 
 export const authMiddleware = async (c: AppContext, next: Next) => {
-	// if(c.req.path === "/health") {
-	//     return await next()
-	// }
+	if (c.req.path === "/health") {
+		return await next();
+	}
 	const authHeader = c.req.header("Authorization");
 
 	if (!authHeader || !authHeader.startsWith("Bearer ")) {
