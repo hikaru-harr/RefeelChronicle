@@ -2,13 +2,20 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
 import type { CheckedAppEnv } from "../app";
-import { createUploadPreSignedUrlUsecase } from "../features/files/usecases/createUploadPreSignedUrlUsecase.ts";
+import { createUploadPreSignedUrlUsecase } from "../features/files/usecases/createUploadPreSignedUrlUsecase";
+import { listFilesUsecase } from "../features/files/usecases/listFilesUsecase";
 
 export const fileRouter = new Hono<CheckedAppEnv>();
 
 const preSignRequestSchema = z.object({
 	fileName: z.string(),
 	fileType: z.string(),
+});
+
+fileRouter.get("/", async (c) => {
+	const { userId } = c.var.currentUser;
+	const files = await listFilesUsecase({userId});
+	return c.json({ files }, 200);
 });
 
 fileRouter.post(
