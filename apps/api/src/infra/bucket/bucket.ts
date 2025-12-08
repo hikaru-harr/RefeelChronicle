@@ -1,13 +1,13 @@
-import "dotenv/config";
 import { S3Client } from "@aws-sdk/client-s3";
+import { BUCKET_REGION, BUCKET_ENDPOINT, BUCKET_ACCESS_KEY, BUCKET_SECRET_KEY } from "../../config/env";
 
 export const s3 = new S3Client({
-	region: process.env.BUCKET_REGION,
-	endpoint: process.env.BUCKET_ENDPOINT,
+	region: BUCKET_REGION,
+	endpoint: BUCKET_ENDPOINT,
 	forcePathStyle: true,
 	requestChecksumCalculation: "WHEN_REQUIRED",
 	credentials: {
-		accessKeyId: process.env.BUCKET_ACCESS_KEY,
-		secretAccessKey: process.env.BUCKET_SECRET_KEY,
+		accessKeyId: BUCKET_ACCESS_KEY,
+		secretAccessKey: BUCKET_SECRET_KEY,
 	},
 });
