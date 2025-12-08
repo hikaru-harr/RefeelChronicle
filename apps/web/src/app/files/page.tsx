@@ -1,59 +1,13 @@
 "use client";
 import { LoaderCircle, Upload } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import useUploadFile from "@/features/file/useUploadFile";
 
 function page() {
 	const inputRef = useRef<HTMLInputElement | null>(null);
-	const [isUploading, setIsUploading] = useState(false);
-
-	const getPreSignedUrl = async (file: File) => {
-		// TODO: Firebase AuthのJWT付与
-		const url = await fetch("/api/files/pre-sign", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				fileName: file.name,
-				fileType: file.type,
-			}),
-		});
-		const data = await url.json();
-		return data;
-	};
-
-	const uploadFile = async (file: File) => {
-		const preSignedUrl = await getPreSignedUrl(file);
-		const response = await fetch(preSignedUrl, {
-			method: "PUT",
-			body: file,
-		});
-		if (!response.ok) {
-			throw new Error("Failed to upload file");
-		}
-	};
-
-	const handleSelectFiles = async (files: FileList | File[]) => {
-		setIsUploading(true);
-		const fileList = Array.from(files);
-		console.log(fileList);
-		if (fileList.length === 0) {
-			// TODO: エラー表示
-			return;
-		}
-		/**
-		 * TODO
-		 * 1.署名付きURLを取得
-		 * 2.ファイルをアップロード
-		 */
-		for (const file of fileList) {
-			await uploadFile(file);
-		}
-
-		setIsUploading(false);
-	};
+	const { isUploading, handleSelectFiles } = useUploadFile();
 
 	return (
 		<div className="flex justify-center">
