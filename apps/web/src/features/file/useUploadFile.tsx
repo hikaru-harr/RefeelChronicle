@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-interface FileItem {
+export interface FileItem {
 	key: string;
 	previewUrl: string;
 }
@@ -11,7 +11,7 @@ const useUploadFile = () => {
 
 	const getPreSignedUrl = async (file: File) => {
 		try {
-			const url = await fetch("http://localhost:3000/api/files/pre-sign", {
+			const url = await fetch(`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/pre-sign`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -90,7 +90,7 @@ const useUploadFile = () => {
 	useEffect(() => {
 		console.log("useEffect");
 		const init = async () => {
-			const result = await fetch("http://localhost:3000/api/files", {
+			const result = await fetch(`${process.env.NEXT_PUBLIC_API_TARGET}/api/files`, {
 				method: "GET",
 				headers: {
 					"Content-Type": "application/json",

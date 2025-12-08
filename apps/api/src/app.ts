@@ -17,7 +17,7 @@ export type CheckedAppEnv = AppEnv & {
 
 export const app = new Hono<AppEnv>();
 
-app.use("*", cors({ origin: ["http://localhost:3001"] }));
+app.use("*", cors({ origin: ["http://localhost:4251"] }));
 
 app.use("*", authMiddleware);
 app.route("/api/files", fileRouter);
