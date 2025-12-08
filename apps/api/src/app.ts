@@ -9,6 +9,12 @@ export type AppEnv = {
 	};
 };
 
+export type CheckedAppEnv = AppEnv & {
+	Variables: {
+		currentUser: { userId: string };
+	};
+};
+
 export const app = new Hono<AppEnv>();
 
 app.use("*", cors({ origin: ["http://localhost:3001"] }));
