@@ -1,19 +1,30 @@
-import { Hono } from 'hono'
-import { authMiddleware } from './core/http/middleware'
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+import { authMiddleware } from "./core/http/middleware";
+import { fileRouter } from "./routes/files";
 
 export type AppEnv = {
-  Variables: {
-    currentUser: { userId: string } | null
-  }
-}
+	Variables: {
+		currentUser: { userId: string } | null;
+	};
+};
 
-export const app = new Hono<AppEnv>()
+export type CheckedAppEnv = AppEnv & {
+	Variables: {
+		currentUser: { userId: string };
+	};
+};
 
-app.use("*", authMiddleware)
+export const app = new Hono<AppEnv>();
 
-app.get('/health', (c) => {
-  return c.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-  })
-})
+app.use("*", cors({ origin: ["http://localhost:3001"] }));
+
+app.use("*", authMiddleware);
+app.route("/api/files", fileRouter);
+
+app.get("/health", (c) => {
+	return c.json({
+		status: "ok",
+		timestamp: new Date().toISOString(),
+	});
+});
