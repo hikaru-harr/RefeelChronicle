@@ -87,6 +87,7 @@ const useUploadFile = () => {
 				});
 				continue;
 			}
+			// TODO: userIdを取得する
 			uploadFileList.push({
 				id: uuidv4(),
 				userId: "1",
@@ -101,7 +102,7 @@ const useUploadFile = () => {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
-					Authorization: "Bearer " + localStorage.getItem("jwtToken"),
+					Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
 				},
 				body: JSON.stringify({
 					objectKey: result.objectKey,
@@ -127,7 +128,7 @@ const useUploadFile = () => {
 					method: "GET",
 					headers: {
 						"Content-Type": "application/json",
-						Authorization: "Bearer " + localStorage.getItem("jwtToken"),
+						Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
 					},
 				},
 			);
