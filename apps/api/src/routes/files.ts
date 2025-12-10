@@ -42,7 +42,7 @@ fileRouter.post(
 		return c.json(
 			{
 				preSignedUrl: presignedUrl,
-				key,
+				objectKey: key,
 			},
 			200,
 		);
