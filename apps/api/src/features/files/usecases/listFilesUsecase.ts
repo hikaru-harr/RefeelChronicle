@@ -8,7 +8,7 @@ interface ListFilesUsecaseInput {
 }
 
 export interface FileWithPreview extends File {
-  previewUrl: string;
+	previewUrl: string;
 }
 
 export const listFilesUsecase = async ({
@@ -20,16 +20,18 @@ export const listFilesUsecase = async ({
 
 	const year = target.getFullYear();
 	const month = target.getMonth() + 1;
-	
+
 	const files = await listFilesByUserAndMonth({ userId, year, month });
 
-	const filesWithPreview = await Promise.all(files.map(async (file) => {
-		const previewUrl = await getPreSignedObjectUrl(file.objectKey);
+	const filesWithPreview = await Promise.all(
+		files.map(async (file) => {
+			const previewUrl = await getPreSignedObjectUrl(file.objectKey);
 
-		return {
-			...file,
-			previewUrl,
-		};
-	}))
+			return {
+				...file,
+				previewUrl,
+			};
+		}),
+	);
 	return filesWithPreview;
 };

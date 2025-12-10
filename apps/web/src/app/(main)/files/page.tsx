@@ -83,9 +83,7 @@ function page() {
 						key={file.id}
 						className="relative aspect-square overflow-hidden"
 						type="button"
-						onClick={() =>
-							setDetailFile(file)
-						}
+						onClick={() => setDetailFile(file)}
 					>
 						<Image
 							src={file.previewUrl}

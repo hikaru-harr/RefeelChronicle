@@ -2,9 +2,9 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
 import type { CheckedAppEnv } from "../app";
+import { compleatUploadUsecase } from "../features/files/usecases/compleatUploadUsecase";
 import { createUploadPreSignedUrlUsecase } from "../features/files/usecases/createUploadPreSignedUrlUsecase";
 import { listFilesUsecase } from "../features/files/usecases/listFilesUsecase";
-import { compleatUploadUsecase } from "../features/files/usecases/compleatUploadUsecase";
 
 export const fileRouter = new Hono<CheckedAppEnv>();
 
@@ -64,5 +64,5 @@ fileRouter.post(
 			bytes,
 		});
 		return c.json({ ok: true }, 201);
-	}
-)
+	},
+);

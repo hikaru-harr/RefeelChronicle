@@ -1,4 +1,5 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import {
 	BUCKET_ACCESS_KEY,
 	BUCKET_ENDPOINT,
@@ -6,7 +7,6 @@ import {
 	BUCKET_REGION,
 	BUCKET_SECRET_KEY,
 } from "../../config/env";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 export const s3 = new S3Client({
 	region: BUCKET_REGION,
@@ -19,7 +19,7 @@ export const s3 = new S3Client({
 	},
 });
 
-export const getPreSignedObjectUrl = async (key:string): Promise<string> => {
+export const getPreSignedObjectUrl = async (key: string): Promise<string> => {
 	const getObjectCommand = new GetObjectCommand({
 		Bucket: BUCKET_NAME,
 		Key: key,
@@ -30,4 +30,4 @@ export const getPreSignedObjectUrl = async (key:string): Promise<string> => {
 	});
 
 	return url;
-}
+};
