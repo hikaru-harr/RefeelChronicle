@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export interface FileItem {
@@ -11,7 +11,11 @@ export interface FileItem {
 	previewUrl: string;
 }
 
-const useUploadFile = () => {
+interface Props {
+	yearMonthParam: string;
+}
+
+const useUploadFile = ({ yearMonthParam }: Props) => {
 	const [isUploading, setIsUploading] = useState(false);
 	const [files, setFiles] = useState<FileItem[]>([]);
 
@@ -123,7 +127,7 @@ const useUploadFile = () => {
 		console.log("useEffect");
 		const init = async () => {
 			const result = await fetch(
-				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files`,
+				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files?yearMonth=${yearMonthParam}`,
 				{
 					method: "GET",
 					headers: {
@@ -133,10 +137,14 @@ const useUploadFile = () => {
 				},
 			);
 			const data = await result.json();
+			if (!data) {
+				setFiles([]);
+				return;
+			}
 			setFiles(data.files);
 		};
 		init();
-	}, []);
+	}, [yearMonthParam]);
 
 	return {
 		files,

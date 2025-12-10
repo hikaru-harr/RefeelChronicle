@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -12,15 +12,37 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import useUploadFile, { type FileItem } from "@/features/file/useUploadFile";
+import useTimeLine from "@/features/timeLine/useTimeLine";
 
 function page() {
 	const inputRef = useRef<HTMLInputElement | null>(null);
-	const { isUploading, handleSelectFiles, files } = useUploadFile();
 
 	const [detailFile, setDetailFile] = useState<FileItem | null>(null);
 
+	const { yearMonthParam, label, handlePrevMonth, handleNextMonth, canGoNext } =
+		useTimeLine();
+
+	const { isUploading, handleSelectFiles, files } = useUploadFile({
+		yearMonthParam,
+	});
+
 	return (
 		<div>
+			<div className="flex items-center justify-between gap-4 w-full">
+				<Button variant="ghost" onClick={handlePrevMonth}>
+					<ChevronLeft />
+				</Button>
+				<span>{label}</span>
+				{canGoNext ? (
+					<Button variant="ghost" onClick={handleNextMonth}>
+						<ChevronRight />
+					</Button>
+				) : (
+					<Button variant="ghost" disabled>
+						<ChevronRight />
+					</Button>
+				)}
+			</div>
 			{detailFile && (
 				<Dialog open={!!detailFile} onOpenChange={() => setDetailFile(null)}>
 					<DialogContent className="h-screen w-screen" showCloseButton={false}>
