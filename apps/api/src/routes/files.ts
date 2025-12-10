@@ -21,7 +21,8 @@ const compleatRequestSchema = z.object({
 
 fileRouter.get("/", async (c) => {
 	const { userId } = c.var.currentUser;
-	const files = await listFilesUsecase({ userId });
+	const yearMonth = c.req.query("yearMonth");
+	const files = await listFilesUsecase({ userId, yearMonth });
 	return c.json({ files }, 200);
 });
 
