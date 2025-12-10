@@ -71,7 +71,7 @@ function page() {
 					</DialogContent>
 				</Dialog>
 			)}
-			<div className="flex justify-center">
+			<div className="flex justify-center mt-2">
 				<Button
 					disabled={isUploading}
 					onClick={(e) => {
