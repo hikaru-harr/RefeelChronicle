@@ -22,8 +22,7 @@ const useUploadFile = () => {
 					fileType: file.type,
 				}),
 			});
-			const data = await url.json();
-			return data.presignedUrl;
+			return await url.json();
 		} catch (error) {
 			console.error("getPreSignedUrl error", error);
 			return null;
@@ -56,7 +55,7 @@ const useUploadFile = () => {
 		const errorList = [];
 		const uploadFileList: FileItem[] = [];
 		for (const file of fileList) {
-			const preSignedUrl = await getPreSignedUrl(file);
+			const {preSignedUrl, key} = await getPreSignedUrl(file);
 			if (!preSignedUrl) {
 				flag = false;
 				errorList.push({
@@ -75,8 +74,21 @@ const useUploadFile = () => {
 				continue;
 			}
 			uploadFileList.push({
-				key: file.name,
+				key,
 				previewUrl: URL.createObjectURL(file),
+			});
+
+			await fetch(`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/compleat`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: "Bearer " + localStorage.getItem("jwtToken"),
+				},
+				body: JSON.stringify({
+					objectKey: key,
+					mime: file.type,
+					bytes: file.size
+				}),
 			});
 		}
 		if (!flag) {
