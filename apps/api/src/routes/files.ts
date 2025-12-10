@@ -2,6 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
 import type { CheckedAppEnv } from "../app";
+import { compleatUploadUsecase } from "../features/files/usecases/compleatUploadUsecase";
 import { createUploadPreSignedUrlUsecase } from "../features/files/usecases/createUploadPreSignedUrlUsecase";
 import { listFilesUsecase } from "../features/files/usecases/listFilesUsecase";
 
@@ -10,6 +11,12 @@ export const fileRouter = new Hono<CheckedAppEnv>();
 const preSignRequestSchema = z.object({
 	fileName: z.string(),
 	fileType: z.string(),
+});
+
+const compleatRequestSchema = z.object({
+	objectKey: z.string(),
+	mime: z.string(),
+	bytes: z.number(),
 });
 
 fileRouter.get("/", async (c) => {
@@ -34,10 +41,28 @@ fileRouter.post(
 
 		return c.json(
 			{
-				presignedUrl,
-				key,
+				preSignedUrl: presignedUrl,
+				objectKey: key,
 			},
 			200,
 		);
+	},
+);
+
+fileRouter.post(
+	"/compleat",
+	zValidator("json", compleatRequestSchema),
+	async (c) => {
+		const { userId } = c.var.currentUser;
+
+		const { objectKey, mime, bytes } = c.req.valid("json");
+
+		await compleatUploadUsecase({
+			userId,
+			objectKey,
+			mime,
+			bytes,
+		});
+		return c.json({ ok: true }, 201);
 	},
 );

@@ -38,7 +38,7 @@ function page() {
 							<div className="relative w-[100vw] h-[calc(100vh-12rem)]">
 								<Image
 									src={detailFile.previewUrl}
-									alt={detailFile.key}
+									alt={detailFile.objectKey}
 									fill
 									className="object-contain"
 									sizes="80vw"
@@ -80,16 +80,14 @@ function page() {
 			<div className="grid grid-cols-3">
 				{files.map((file) => (
 					<button
-						key={file.key}
+						key={file.id}
 						className="relative aspect-square overflow-hidden"
 						type="button"
-						onClick={() =>
-							setDetailFile({ key: file.key, previewUrl: file.previewUrl })
-						}
+						onClick={() => setDetailFile(file)}
 					>
 						<Image
 							src={file.previewUrl}
-							alt={file.key}
+							alt={file.objectKey}
 							fill
 							className="object-cover"
 							sizes="(min-width: 768px) 33vw, 50vw"

@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 export interface FileItem {
-	key: string;
+	id: string;
+	userId: string;
+	objectKey: string;
+	mime: string;
+	bytes: number;
+	createdAt: Date;
 	previewUrl: string;
 }
 
@@ -9,28 +15,35 @@ const useUploadFile = () => {
 	const [isUploading, setIsUploading] = useState(false);
 	const [files, setFiles] = useState<FileItem[]>([]);
 
-	const getPreSignedUrl = async (file: File) => {
+	const getPreSignedUrl = async (
+		file: File,
+	): Promise<{ preSignedUrl: string; objectKey: string } | null> => {
 		try {
-			const url = await fetch(`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/pre-sign`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+			const url = await fetch(
+				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/pre-sign`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+					},
+					body: JSON.stringify({
+						fileName: file.name,
+						fileType: file.type,
+					}),
 				},
-				body: JSON.stringify({
-					fileName: file.name,
-					fileType: file.type,
-				}),
-			});
-			const data = await url.json();
-			return data.presignedUrl;
+			);
+			return await url.json();
 		} catch (error) {
 			console.error("getPreSignedUrl error", error);
 			return null;
 		}
 	};
 
-	const uploadFile = async (preSignedUrl: string, file: File) => {
+	const uploadFile = async (
+		preSignedUrl: string,
+		file: File,
+	): Promise<boolean> => {
 		const response = await fetch(preSignedUrl, {
 			method: "PUT",
 			headers: {
@@ -56,8 +69,8 @@ const useUploadFile = () => {
 		const errorList = [];
 		const uploadFileList: FileItem[] = [];
 		for (const file of fileList) {
-			const preSignedUrl = await getPreSignedUrl(file);
-			if (!preSignedUrl) {
+			const result = await getPreSignedUrl(file);
+			if (!result) {
 				flag = false;
 				errorList.push({
 					fileName: file.name,
@@ -65,7 +78,7 @@ const useUploadFile = () => {
 				});
 				continue;
 			}
-			const uploadResult = await uploadFile(preSignedUrl, file);
+			const uploadResult = await uploadFile(result.preSignedUrl, file);
 			if (!uploadResult) {
 				flag = false;
 				errorList.push({
@@ -74,9 +87,28 @@ const useUploadFile = () => {
 				});
 				continue;
 			}
+			// TODO: userIdを取得する
 			uploadFileList.push({
-				key: file.name,
+				id: uuidv4(),
+				userId: "1",
+				mime: file.type,
+				bytes: file.size,
+				objectKey: result.objectKey,
 				previewUrl: URL.createObjectURL(file),
+				createdAt: new Date(),
+			});
+
+			await fetch(`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/compleat`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+				},
+				body: JSON.stringify({
+					objectKey: result.objectKey,
+					mime: file.type,
+					bytes: file.size,
+				}),
 			});
 		}
 		if (!flag) {
@@ -90,13 +122,16 @@ const useUploadFile = () => {
 	useEffect(() => {
 		console.log("useEffect");
 		const init = async () => {
-			const result = await fetch(`${process.env.NEXT_PUBLIC_API_TARGET}/api/files`, {
-				method: "GET",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: "Bearer " + localStorage.getItem("jwtToken"),
+			const result = await fetch(
+				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files`,
+				{
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+					},
 				},
-			});
+			);
 			const data = await result.json();
 			setFiles(data.files);
 		};
