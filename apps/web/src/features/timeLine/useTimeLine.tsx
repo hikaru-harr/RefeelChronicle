@@ -1,8 +1,10 @@
+import { addMonths, format, isAfter, startOfMonth } from "date-fns";
 import { useMemo, useState } from "react";
-import { addMonths, isAfter, startOfMonth, format } from "date-fns";
 
 const useTimeLine = () => {
-	const [currentMonth, setCurrentMonth] = useState(() => startOfMonth(new Date()));
+	const [currentMonth, setCurrentMonth] = useState(() =>
+		startOfMonth(new Date()),
+	);
 
 	const yearMonthParam = useMemo(() => {
 		return format(currentMonth, "yyyy-MM");
