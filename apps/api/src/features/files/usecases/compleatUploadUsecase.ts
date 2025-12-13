@@ -5,6 +5,7 @@ import { type CreateFileProps, createFile, setFilePreviewObjectKey } from "../re
 
 export interface FileWithPreview extends File {
 	previewUrl: string;
+	videoUrl?: string;
 }
 
 type CompleatInput = Omit<CreateFileProps, "kind">
@@ -16,6 +17,7 @@ export const compleatUploadUsecase = async (
 	let file = await createFile({ ...props, kind });
 
 	let previewKey = file.objectKey;
+	let videoUrl: string | undefined = undefined;
 
 	if(kind === "video") {
 		try {
@@ -23,9 +25,10 @@ export const compleatUploadUsecase = async (
 			await setFilePreviewObjectKey(file.id, thumbKey);
 			file = { ...file, previewObjectKey: thumbKey }
 			previewKey = thumbKey;
+			videoUrl = await getPreSignedObjectUrl(file.objectKey);
 		} catch (error) {
 			console.error(error);
 		}
 	}
-	return { ...file, previewUrl: await getPreSignedObjectUrl(previewKey) }
+	return { ...file, previewUrl: await getPreSignedObjectUrl(previewKey), videoUrl }
 };

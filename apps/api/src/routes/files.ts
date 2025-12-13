@@ -63,6 +63,7 @@ fileRouter.post(
 			objectKey,
 			mime,
 			bytes,
+			
 		});
 		return c.json(fileWithPreview, 201);
 	},

@@ -58,19 +58,25 @@ function page() {
 						</DialogHeader>
 						<div className="fixed inset-0 flex items-center justify-center">
 							<div className="relative w-[100vw] h-[calc(100vh-12rem)]">
-								{}
-								<Image
-									src={detailFile.previewUrl}
-									alt={detailFile.objectKey}
-									fill
-									className="object-contain"
+								{detailFile.kind === "video" ? (
+									<video
+										controls
+										src={detailFile.videoUrl}
+									/>
+								) : (
+									<Image
+										src={detailFile.previewUrl}
+										alt={detailFile.objectKey}
+										fill
+										className="object-contain"
 									sizes="80vw"
 									unoptimized
-								/>
-							</div>
+								/>	
+							)}
 						</div>
-					</DialogContent>
-				</Dialog>
+					</div>
+				</DialogContent>
+			</Dialog>
 			)}
 			<div className="flex justify-center mt-2">
 				<Button
@@ -81,7 +87,6 @@ function page() {
 					}}
 					className="h-12 rounded-full w-12 cursor-pointer absolute bottom-10 right-10 [&_svg:not([class*='size-'])]:size-8"
 				>
-					{/* {isUploading ? <LoaderCircle className="animate-spin" /> : <Upload />} */}
 					<Plus />
 				</Button>
 
