@@ -58,12 +58,12 @@ fileRouter.post(
 
 		const { objectKey, mime, bytes } = c.req.valid("json");
 
-		await compleatUploadUsecase({
+		const fileWithPreview = await compleatUploadUsecase({
 			userId,
 			objectKey,
 			mime,
 			bytes,
 		});
-		return c.json({ ok: true }, 201);
+		return c.json(fileWithPreview, 201);
 	},
 );

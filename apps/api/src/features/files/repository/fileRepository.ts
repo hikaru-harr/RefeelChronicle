@@ -7,6 +7,7 @@ export interface CreateFileProps {
 	objectKey: string;
 	mime: string;
 	bytes: number;
+	kind: string;
 }
 
 export async function createFile(props: CreateFileProps): Promise<File> {
@@ -16,10 +17,18 @@ export async function createFile(props: CreateFileProps): Promise<File> {
 			objectKey: props.objectKey,
 			mime: props.mime,
 			bytes: props.bytes,
+			kind: props.kind,
 		},
 	});
 
 	return toDomainFile(row);
+}
+
+export async function setFilePreviewObjectKey(fileId: string, previewObjectKey: string): Promise<void> {
+	await prisma.file.update({
+		where: { id: fileId },
+		data: { previewObjectKey },
+	});
 }
 
 export interface ListFilesByUserAndMonthProps {

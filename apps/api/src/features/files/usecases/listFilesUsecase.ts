@@ -25,7 +25,8 @@ export const listFilesUsecase = async ({
 
 	const filesWithPreview = await Promise.all(
 		files.map(async (file) => {
-			const previewUrl = await getPreSignedObjectUrl(file.objectKey);
+			const key = file.previewObjectKey ?? file.objectKey;
+			const previewUrl = await getPreSignedObjectUrl(key);
 
 			return {
 				...file,

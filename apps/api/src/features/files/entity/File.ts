@@ -4,5 +4,7 @@ export type File = {
 	objectKey: string;
 	mime: string;
 	bytes: number;
+	kind: string;
+	previewObjectKey: string | null;
 	createdAt: Date;
 };

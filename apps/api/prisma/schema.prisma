@@ -14,15 +14,14 @@ datasource db {
 }
 
 model File {
-  id         String   @id @default(uuid())
-  userId     String
-  objectKey  String   @unique
-  mime       String
-  bytes      Int
-  createdAt  DateTime @default(now())
-
-  kind       String @default("other")
+  id               String   @id @default(uuid())
+  userId           String
+  objectKey        String   @unique
+  mime             String
+  bytes            Int
+  kind             String   @default("other")
   previewObjectKey String?
+  createdAt        DateTime @default(now())
 
   @@index([userId, createdAt])
 }
