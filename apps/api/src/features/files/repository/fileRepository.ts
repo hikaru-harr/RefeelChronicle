@@ -24,7 +24,10 @@ export async function createFile(props: CreateFileProps): Promise<File> {
 	return toDomainFile(row);
 }
 
-export async function setFilePreviewObjectKey(fileId: string, previewObjectKey: string): Promise<void> {
+export async function setFilePreviewObjectKey(
+	fileId: string,
+	previewObjectKey: string,
+): Promise<void> {
 	await prisma.file.update({
 		where: { id: fileId },
 		data: { previewObjectKey },

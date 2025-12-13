@@ -59,24 +59,21 @@ function page() {
 						<div className="fixed inset-0 flex items-center justify-center">
 							<div className="relative w-[100vw] h-[calc(100vh-12rem)]">
 								{detailFile.kind === "video" ? (
-									<video
-										controls
-										src={detailFile.videoUrl}
-									/>
+									<video controls src={detailFile.videoUrl} />
 								) : (
 									<Image
 										src={detailFile.previewUrl}
 										alt={detailFile.objectKey}
 										fill
 										className="object-contain"
-									sizes="80vw"
-									unoptimized
-								/>	
-							)}
+										sizes="80vw"
+										unoptimized
+									/>
+								)}
+							</div>
 						</div>
-					</div>
-				</DialogContent>
-			</Dialog>
+					</DialogContent>
+				</Dialog>
 			)}
 			<div className="flex justify-center mt-2">
 				<Button

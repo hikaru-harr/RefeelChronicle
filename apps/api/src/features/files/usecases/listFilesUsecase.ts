@@ -28,8 +28,8 @@ export const listFilesUsecase = async ({
 		files.map(async (file) => {
 			const key = file.previewObjectKey ?? file.objectKey;
 			const previewUrl = await getPreSignedObjectUrl(key);
-			let videoUrl: string | undefined = undefined;
-			if(file.kind === "video") {
+			let videoUrl: string | undefined;
+			if (file.kind === "video") {
 				videoUrl = await getPreSignedObjectUrl(file.objectKey);
 			}
 			return {
