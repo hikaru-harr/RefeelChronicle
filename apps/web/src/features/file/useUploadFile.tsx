@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { useEffect, useState } from "react";
 
 export interface FileItem {
 	id: string;
@@ -9,6 +8,8 @@ export interface FileItem {
 	bytes: number;
 	createdAt: Date;
 	previewUrl: string;
+	kind: "image" | "video" | "other";
+	previewObjectKey: string;
 }
 
 interface Props {
@@ -91,29 +92,23 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 				});
 				continue;
 			}
-			// TODO: userIdを取得する
-			uploadFileList.push({
-				id: uuidv4(),
-				userId: "1",
-				mime: file.type,
-				bytes: file.size,
-				objectKey: result.objectKey,
-				previewUrl: URL.createObjectURL(file),
-				createdAt: new Date(),
-			});
 
-			await fetch(`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/compleat`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+			const compleatResult = await fetch(
+				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/compleat`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+					},
+					body: JSON.stringify({
+						objectKey: result.objectKey,
+						mime: file.type,
+						bytes: file.size,
+					}),
 				},
-				body: JSON.stringify({
-					objectKey: result.objectKey,
-					mime: file.type,
-					bytes: file.size,
-				}),
-			});
+			);
+			uploadFileList.push(await compleatResult.json());
 		}
 		if (!flag) {
 			console.log("errorList", errorList);

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Play, Plus } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -58,14 +58,18 @@ function page() {
 						</DialogHeader>
 						<div className="fixed inset-0 flex items-center justify-center">
 							<div className="relative w-[100vw] h-[calc(100vh-12rem)]">
-								<Image
-									src={detailFile.previewUrl}
-									alt={detailFile.objectKey}
-									fill
-									className="object-contain"
-									sizes="80vw"
-									unoptimized
-								/>
+								{detailFile.kind === "video" ? (
+									<video controls src={detailFile.videoUrl} />
+								) : (
+									<Image
+										src={detailFile.previewUrl}
+										alt={detailFile.objectKey}
+										fill
+										className="object-contain"
+										sizes="80vw"
+										unoptimized
+									/>
+								)}
 							</div>
 						</div>
 					</DialogContent>
@@ -80,7 +84,6 @@ function page() {
 					}}
 					className="h-12 rounded-full w-12 cursor-pointer absolute bottom-10 right-10 [&_svg:not([class*='size-'])]:size-8"
 				>
-					{/* {isUploading ? <LoaderCircle className="animate-spin" /> : <Upload />} */}
 					<Plus />
 				</Button>
 
@@ -115,6 +118,14 @@ function page() {
 							sizes="(min-width: 768px) 33vw, 50vw"
 							unoptimized
 						/>
+
+						{file.kind === "video" && (
+							<div className="absolute inset-0 flex items-center justify-center bg-black/20">
+								<div className="w-9 h-9 rounded-full bg-black/70 flex items-center justify-center">
+									<Play stroke="white" fill="white" />
+								</div>
+							</div>
+						)}
 					</button>
 				))}
 			</div>

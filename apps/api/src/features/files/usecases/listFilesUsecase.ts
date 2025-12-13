@@ -9,6 +9,7 @@ interface ListFilesUsecaseInput {
 
 export interface FileWithPreview extends File {
 	previewUrl: string;
+	videoUrl?: string;
 }
 
 export const listFilesUsecase = async ({
@@ -25,11 +26,16 @@ export const listFilesUsecase = async ({
 
 	const filesWithPreview = await Promise.all(
 		files.map(async (file) => {
-			const previewUrl = await getPreSignedObjectUrl(file.objectKey);
-
+			const key = file.previewObjectKey ?? file.objectKey;
+			const previewUrl = await getPreSignedObjectUrl(key);
+			let videoUrl: string | undefined;
+			if (file.kind === "video") {
+				videoUrl = await getPreSignedObjectUrl(file.objectKey);
+			}
 			return {
 				...file,
 				previewUrl,
+				videoUrl,
 			};
 		}),
 	);

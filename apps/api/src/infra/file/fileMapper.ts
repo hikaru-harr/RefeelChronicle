@@ -10,6 +10,8 @@ export function toDomainFile(row: PrismaFile): File {
 		objectKey: row.objectKey,
 		mime: row.mime,
 		bytes: row.bytes,
+		kind: row.kind,
+		previewObjectKey: row.previewObjectKey,
 		createdAt: row.createdAt,
 	};
 }
