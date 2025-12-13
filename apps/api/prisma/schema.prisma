@@ -21,5 +21,8 @@ model File {
   bytes      Int
   createdAt  DateTime @default(now())
 
+  kind       String @default("other")
+  previewObjectKey String?
+
   @@index([userId, createdAt])
 }
