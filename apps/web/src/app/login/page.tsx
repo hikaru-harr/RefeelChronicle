@@ -26,7 +26,7 @@ function page() {
 	});
 
 	return (
-		<div className="w-screen h-screen flex flex-col justify-center items-center">
+		<div className="fixed inset-0 flex flex-col items-center justify-center">
 			<h1 className="text-2xl font-black mb-2">Refeel Chronicle</h1>
 			{requestState.error && (
 				<p className="text-red-500 mt-4 w-[320px] text-center border bg-red-50 border-red-500 py-2 rounded">

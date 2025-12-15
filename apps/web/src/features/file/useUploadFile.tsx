@@ -140,7 +140,9 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 	};
 
 	useEffect(() => {
-		logInfo(`GET /files start ${process.env.NEXT_PUBLIC_API_TARGET}/api/files?yearMonth=${yearMonthParam}`);
+		logInfo(
+			`GET /files start ${process.env.NEXT_PUBLIC_API_TARGET}/api/files?yearMonth=${yearMonthParam}`,
+		);
 		const init = async () => {
 			const result = await fetch(
 				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files?yearMonth=${yearMonthParam}`,
