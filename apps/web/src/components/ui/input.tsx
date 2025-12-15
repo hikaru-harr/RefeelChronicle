@@ -3,11 +3,18 @@ import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+function Input({
+	className,
+	type,
+	value,
+	...props
+}: React.ComponentProps<"input">) {
 	const [showPassword, setShowPassword] = useState(false);
+	const normalizedValue = value === undefined || value === null ? "" : value;
 	return (
 		<div className="relative">
 			<input
+				value={normalizedValue}
 				type={showPassword ? "text" : type}
 				data-slot="input"
 				className={cn(
