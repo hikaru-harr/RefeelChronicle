@@ -46,23 +46,41 @@ services:
       MC_HOST_local: http://${MINIO_ROOT_USER}:${MINIO_ROOT_PASSWORD}@minio:9000
       MINIO_BUCKET: ${MINIO_BUCKET}
       WEB_ORIGIN: ${WEB_ORIGIN}
+      # 本場環境で使用
+    # command: >-
+    #   "mc alias set local http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
+    #    mc mb --ignore-existing local/$MINIO_BUCKET &&
+    #    mc anonymous set none local/$MINIO_BUCKET &&
+    #    echo '{
+    #      \"CORSRules\": [
+    #        {
+    #          \"AllowedHeaders\": [\"*\"],
+    #          \"AllowedMethods\": [\"GET\",\"PUT\",\"POST\"],
+    #          \"AllowedOrigins\": [\"'\"'\"${WEB_ORIGIN}\"'\"'\"],
+    #          \"ExposeHeaders\": [\"ETag\"],
+    #          \"MaxAgeSeconds\": 3000
+    #        }
+    #      ]
+    #    }' > /tmp/cors.json &&
+    #    mc admin config set local api cors_allow_origin=\"${WEB_ORIGIN}\" &&
+    #    echo \"MinIO bucket & CORS configured\" && sleep 2"
     command: >-
       "mc alias set local http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
-       mc mb --ignore-existing local/$MINIO_BUCKET &&
-       mc anonymous set none local/$MINIO_BUCKET &&
-       echo '{
-         \"CORSRules\": [
-           {
-             \"AllowedHeaders\": [\"*\"],
-             \"AllowedMethods\": [\"GET\",\"PUT\",\"POST\"],
-             \"AllowedOrigins\": [\"'\"'\"${WEB_ORIGIN}\"'\"'\"],
-             \"ExposeHeaders\": [\"ETag\"],
-             \"MaxAgeSeconds\": 3000
-           }
-         ]
-       }' > /tmp/cors.json &&
-       mc admin config set local api cors_allow_origin=\"${WEB_ORIGIN}\" &&
-       echo \"MinIO bucket & CORS configured\" && sleep 2"
+      mc mb --ignore-existing local/$MINIO_BUCKET &&
+      mc anonymous set none local/$MINIO_BUCKET &&
+      echo '{
+        \"CORSRules\": [
+          {
+            \"AllowedHeaders\": [\"*\"],
+            \"AllowedMethods\": [\"GET\",\"PUT\",\"POST\"],
+            \"AllowedOrigins\": [\"*\"],
+            \"ExposeHeaders\": [\"ETag\"],
+            \"MaxAgeSeconds\": 3000
+          }
+        ]
+      }' > /tmp/cors.json &&
+      mc anonymous set public local/$MINIO_BUCKET &&
+      echo \"MinIO bucket & CORS configured\" && sleep 2"
     restart: "no"
 
 volumes:

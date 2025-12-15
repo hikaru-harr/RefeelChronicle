@@ -59,6 +59,7 @@ function page() {
 						<div className="fixed inset-0 flex items-center justify-center">
 							<div className="relative w-[100vw] h-[calc(100vh-12rem)]">
 								{detailFile.kind === "video" ? (
+									// biome-ignore lint/a11y/useMediaCaption: 開発中のためキャプションは後で追加予定
 									<video controls src={detailFile.videoUrl} />
 								) : (
 									<Image

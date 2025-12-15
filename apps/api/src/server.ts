@@ -3,6 +3,7 @@ import { serve } from "@hono/node-server";
 import { app } from "./app";
 
 const port = 4250;
-console.log(`API server starting on http://localhost:${port}`);
+const hostname = "0.0.0.0";
+console.log(`API server starting on http://${hostname}:${port}`);
 
-serve({ port, fetch: app.fetch });
+serve({ port, hostname, fetch: app.fetch });

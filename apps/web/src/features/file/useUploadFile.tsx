@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLogger } from "@/lib/context/LoggerContext";
 
 export interface FileItem {
 	id: string;
@@ -10,6 +11,7 @@ export interface FileItem {
 	previewUrl: string;
 	kind: "image" | "video" | "other";
 	previewObjectKey: string;
+	videoUrl?: string;
 }
 
 interface Props {
@@ -17,12 +19,17 @@ interface Props {
 }
 
 const useUploadFile = ({ yearMonthParam }: Props) => {
+	const { logInfo, logError } = useLogger();
+
 	const [isUploading, setIsUploading] = useState(false);
 	const [files, setFiles] = useState<FileItem[]>([]);
 
 	const getPreSignedUrl = async (
 		file: File,
 	): Promise<{ preSignedUrl: string; objectKey: string } | null> => {
+		logInfo(
+			`getPreSignedUrl start ${process.env.NEXT_PUBLIC_API_TARGET}/api/files/pre-sign`,
+		);
 		try {
 			const url = await fetch(
 				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/pre-sign`,
@@ -38,9 +45,12 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 					}),
 				},
 			);
+			logInfo(
+				`getPreSignedUrl success ${process.env.NEXT_PUBLIC_API_TARGET}/api/files/pre-sign`,
+			);
 			return await url.json();
 		} catch (error) {
-			console.error("getPreSignedUrl error", error);
+			logError(`getPreSignedUrl error: ${error}`);
 			return null;
 		}
 	};
@@ -49,6 +59,8 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 		preSignedUrl: string,
 		file: File,
 	): Promise<boolean> => {
+		logInfo(`uploadFile start ${preSignedUrl}`);
+
 		const response = await fetch(preSignedUrl, {
 			method: "PUT",
 			headers: {
@@ -56,7 +68,9 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 			},
 			body: file,
 		});
+		logInfo(`uploadFile success ${preSignedUrl}`);
 		if (!response.ok) {
+			logError(`uploadFile error ${preSignedUrl}`);
 			return false;
 		}
 		return true;
@@ -68,6 +82,7 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 		console.log(fileList);
 		if (fileList.length === 0) {
 			// TODO: エラー表示
+			logError(`handleSelectFiles error: ${fileList.length}`);
 			return;
 		}
 		let flag = true;
@@ -93,6 +108,9 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 				continue;
 			}
 
+			logInfo(
+				`compleat start ${process.env.NEXT_PUBLIC_API_TARGET}/api/files/compleat`,
+			);
 			const compleatResult = await fetch(
 				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/compleat`,
 				{
@@ -108,10 +126,13 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 					}),
 				},
 			);
+			logInfo(
+				`compleat success ${process.env.NEXT_PUBLIC_API_TARGET}/api/files/compleat`,
+			);
 			uploadFileList.push(await compleatResult.json());
 		}
 		if (!flag) {
-			console.log("errorList", errorList);
+			logError(`errorList ${errorList}`);
 		}
 		setFiles((prev) => [...uploadFileList, ...prev]);
 
@@ -119,7 +140,7 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 	};
 
 	useEffect(() => {
-		console.log("useEffect");
+		logInfo(`GET /files start yearMonth=${yearMonthParam}`);
 		const init = async () => {
 			const result = await fetch(
 				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files?yearMonth=${yearMonthParam}`,
@@ -137,9 +158,10 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 				return;
 			}
 			setFiles(data.files);
+			logInfo(`GET /files success yearMonth=${yearMonthParam}`);
 		};
 		init();
-	}, [yearMonthParam]);
+	}, [yearMonthParam, logInfo]);
 
 	return {
 		files,
