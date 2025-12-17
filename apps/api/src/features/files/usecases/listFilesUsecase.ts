@@ -1,6 +1,7 @@
 import { getPreSignedObjectUrl } from "../../../infra/bucket/bucket";
-import type { File } from "../entity/File";
 import { listFilesByUserAndMonth } from "../repository/fileRepository";
+import { FileKind as PrismaFileKind } from "../../../generated/prisma/enums"
+import type { File } from "../entity/File";
 
 interface ListFilesUsecaseInput {
 	userId: string;
@@ -29,7 +30,7 @@ export const listFilesUsecase = async ({
 			const key = file.previewObjectKey ?? file.objectKey;
 			const previewUrl = await getPreSignedObjectUrl(key);
 			let videoUrl: string | undefined;
-			if (file.kind === "video") {
+			if (file.kind === PrismaFileKind.video) {
 				videoUrl = await getPreSignedObjectUrl(file.objectKey);
 			}
 			return {

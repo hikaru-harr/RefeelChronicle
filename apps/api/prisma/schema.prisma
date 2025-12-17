@@ -13,13 +13,19 @@ datasource db {
   provider = "postgresql"
 }
 
+enum FileKind {
+  other
+  file
+  video
+}
+
 model File {
   id               String   @id @default(uuid())
   userId           String
   objectKey        String   @unique
   mime             String
   bytes            Int
-  kind             String   @default("other")
+  kind             FileKind @default(other)
   isFavorite       Boolean  @default(false)
   previewObjectKey String?
   createdAt        DateTime @default(now())

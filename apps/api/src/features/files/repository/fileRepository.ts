@@ -1,13 +1,14 @@
 import { prisma } from "../../../infra/db/prisma";
 import { toDomainFile, toDomainFiles } from "../../../infra/file/fileMapper";
 import type { File } from "../entity/File";
+import { FileKind as PrismaFileKind } from "../../../generated/prisma/enums";
 
 export interface CreateFileProps {
 	userId: string;
 	objectKey: string;
 	mime: string;
 	bytes: number;
-	kind: string;
+	kind: PrismaFileKind;
 }
 
 export interface GetFileByIdProps {
