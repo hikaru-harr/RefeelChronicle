@@ -23,6 +23,7 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 
 	const [isUploading, setIsUploading] = useState(false);
 	const [files, setFiles] = useState<FileItem[]>([]);
+	 const [hasMore, setHasMore] = useState(true);
 
 	const getPreSignedUrl = async (
 		file: File,
@@ -140,7 +141,9 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 	};
 
 	useEffect(() => {
-		logInfo(`GET /files start yearMonth=${yearMonthParam}`);
+		logInfo(
+			`GET /files start ${process.env.NEXT_PUBLIC_API_TARGET}/api/files?yearMonth=${yearMonthParam}?page=${1}`,
+		);
 		const init = async () => {
 			const result = await fetch(
 				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files?yearMonth=${yearMonthParam}`,

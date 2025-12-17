@@ -10,6 +10,11 @@ export interface CreateFileProps {
 	kind: string;
 }
 
+export interface GetFileByIdProps {
+	fileId: string;
+	userId: string;
+}
+
 export async function createFile(props: CreateFileProps): Promise<File> {
 	const row = await prisma.file.create({
 		data: {
@@ -58,4 +63,13 @@ export async function listFilesByUserAndMonth(
 	});
 
 	return toDomainFiles(rows);
+}
+
+export async function getFileById(
+	props: GetFileByIdProps,
+): Promise<File | null> {
+	const row = await prisma.file.findUnique({
+		where: { id: props.fileId, userId: props.userId },
+	});
+	return row ? toDomainFile(row) : null;
 }

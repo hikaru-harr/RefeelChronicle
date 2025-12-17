@@ -1,23 +1,20 @@
 "use client";
 
-import { ArrowLeft, ChevronLeft, ChevronRight, Play, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play, Plus } from "lucide-react";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import Link from "next/link";
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import useUploadFile, { type FileItem } from "@/features/file/useUploadFile";
+import { useSelectedFileStore } from "@/features/file/useSelectedFileStore";
+import useUploadFile from "@/features/file/useUploadFile";
 import useTimeLine from "@/features/timeLine/useTimeLine";
 
 function page() {
+	const setSelectedFile = useSelectedFileStore(
+		(state) => state.setSelectedFile,
+	);
 	const inputRef = useRef<HTMLInputElement | null>(null);
-
-	const [detailFile, setDetailFile] = useState<FileItem | null>(null);
 
 	const { yearMonthParam, label, handlePrevMonth, handleNextMonth, canGoNext } =
 		useTimeLine();
@@ -43,39 +40,6 @@ function page() {
 					</Button>
 				)}
 			</div>
-			{detailFile && (
-				<Dialog open={!!detailFile} onOpenChange={() => setDetailFile(null)}>
-					<DialogContent className="h-screen w-screen" showCloseButton={false}>
-						<DialogHeader className="relative h-12 items-center justify-center z-50">
-							<Button
-								variant="ghost"
-								onClick={() => setDetailFile(null)}
-								className="absolute left-4"
-							>
-								<ArrowLeft />
-							</Button>
-							<DialogTitle>Detail</DialogTitle>
-						</DialogHeader>
-						<div className="fixed inset-0 flex items-center justify-center">
-							<div className="relative w-[100vw] h-[calc(100vh-12rem)]">
-								{detailFile.kind === "video" ? (
-									// biome-ignore lint/a11y/useMediaCaption: 開発中のためキャプションは後で追加予定
-									<video controls src={detailFile.videoUrl} />
-								) : (
-									<Image
-										src={detailFile.previewUrl}
-										alt={detailFile.objectKey}
-										fill
-										className="object-contain"
-										sizes="80vw"
-										unoptimized
-									/>
-								)}
-							</div>
-						</div>
-					</DialogContent>
-				</Dialog>
-			)}
 			<div className="flex justify-center mt-2">
 				<Button
 					disabled={isUploading}
@@ -83,7 +47,7 @@ function page() {
 						e.stopPropagation();
 						inputRef.current?.click();
 					}}
-					className="h-12 rounded-full w-12 cursor-pointer absolute bottom-10 right-10 [&_svg:not([class*='size-'])]:size-8"
+					className="h-[80px] rounded-full w-[80px] cursor-pointer absolute bottom-20 right-20 [&_svg:not([class*='size-'])]:size-8 z-50"
 				>
 					<Plus />
 				</Button>
@@ -105,11 +69,11 @@ function page() {
 			</div>
 			<div className="grid grid-cols-3">
 				{files.map((file) => (
-					<button
+					<Link
 						key={file.id}
+						href={`/files/${file.id}`}
 						className="relative aspect-square overflow-hidden"
-						type="button"
-						onClick={() => setDetailFile(file)}
+						onClick={() => setSelectedFile(file)}
 					>
 						<Image
 							src={file.previewUrl}
@@ -127,7 +91,7 @@ function page() {
 								</div>
 							</div>
 						)}
-					</button>
+					</Link>
 				))}
 			</div>
 		</div>

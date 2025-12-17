@@ -4,6 +4,7 @@ import { z } from "zod";
 import type { CheckedAppEnv } from "../app";
 import { compleatUploadUsecase } from "../features/files/usecases/compleatUploadUsecase";
 import { createUploadPreSignedUrlUsecase } from "../features/files/usecases/createUploadPreSignedUrlUsecase";
+import { getFileUsecase } from "../features/files/usecases/getFileUsecase";
 import { listFilesUsecase } from "../features/files/usecases/listFilesUsecase";
 
 export const fileRouter = new Hono<CheckedAppEnv>();
@@ -24,6 +25,13 @@ fileRouter.get("/", async (c) => {
 	const yearMonth = c.req.query("yearMonth");
 	const files = await listFilesUsecase({ userId, yearMonth });
 	return c.json({ files }, 200);
+});
+
+fileRouter.get("/:id", async (c) => {
+	const { userId } = c.var.currentUser;
+	const fileId = c.req.param("id");
+	const file = await getFileUsecase({ userId, fileId });
+	return c.json({ file }, 200);
 });
 
 fileRouter.post(
