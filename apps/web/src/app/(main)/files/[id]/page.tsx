@@ -20,16 +20,37 @@ export default function Page() {
 
 	const [detailFile, setDetailFile] = useState<FileItem | null>(null);
 
-	const handleFavorite = () => {
+	const handleFavorite = async () => {
 		if (!detailFile) return;
-		setDetailFile({
-			...detailFile,
-			isFavorite: !detailFile.isFavorite,
-		});
-		setSelectedFile({
-			...detailFile,
-			isFavorite: !detailFile.isFavorite,
-		});
+		try {
+			logInfo(`PATCH /files/${detailFile.id}/favorite start`);
+			await fetch(
+				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/${detailFile.id}/favorite`,
+				{
+					method: "PATCH",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${localStorage.getItem("jwtToken") ?? ""}`,
+					},
+					body: JSON.stringify({
+						isFavorite: !detailFile.isFavorite,
+					}),
+				},
+			);
+			setDetailFile({
+				...detailFile,
+				isFavorite: !detailFile.isFavorite,
+			});
+			setSelectedFile({
+				...detailFile,
+				isFavorite: !detailFile.isFavorite,
+			});
+		} catch (error) {
+			logError(
+				`PATCH /files/${detailFile.id}/favorite error: ${String(error)}`,
+			);
+			return;
+		}
 	};
 
 	useEffect(() => {
@@ -127,18 +148,20 @@ export default function Page() {
 					onClick={handleFavorite}
 					className="h-12 w-12 rounded-full bg-black flex items-center justify-center"
 				>
-					<Star fill={detailFile.isFavorite ? "yellow" : "black"} stroke={detailFile.isFavorite ? "yellow" : "white"} className="h-6 w-6" />
+					<Star
+						fill={detailFile.isFavorite ? "yellow" : "black"}
+						stroke={detailFile.isFavorite ? "yellow" : "white"}
+						className="h-6 w-6"
+					/>
 				</button>
 				<button
 					type="button"
-					onClick={handleFavorite}
 					className="h-12 w-12 rounded-full bg-black flex items-center justify-center"
 				>
 					<Tag fill="black" stroke="white" className="h-6 w-6" />
 				</button>
 				<button
-					type="button"	
-					onClick={handleFavorite}
+					type="button"
 					className="h-12 w-12 rounded-full bg-black flex items-center justify-center"
 				>
 					<MessageCircleMore fill="black" stroke="white" className="h-6 w-6" />
