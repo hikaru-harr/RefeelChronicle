@@ -11,6 +11,7 @@ export interface FileItem {
 	previewUrl: string;
 	kind: "image" | "video" | "other";
 	previewObjectKey: string;
+	isFavorite: boolean;
 	videoUrl?: string;
 }
 

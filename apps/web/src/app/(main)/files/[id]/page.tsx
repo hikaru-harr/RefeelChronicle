@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useSelectedFileStore } from "@/features/file/useSelectedFileStore";
 import type { FileItem } from "@/features/file/useUploadFile";
 import { useLogger } from "@/lib/context/LoggerContext";
+import { MessageCircleMore, Star, Tag } from "lucide-react";
 
 export default function Page() {
 	const router = useRouter();
@@ -18,6 +19,39 @@ export default function Page() {
 	const setSelectedFile = useSelectedFileStore((s) => s.setSelectedFile);
 
 	const [detailFile, setDetailFile] = useState<FileItem | null>(null);
+
+	const handleFavorite = async () => {
+		if (!detailFile) return;
+		try {
+			logInfo(`PATCH /files/${detailFile.id}/favorite start`);
+			await fetch(
+				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/${detailFile.id}/favorite`,
+				{
+					method: "PATCH",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${localStorage.getItem("jwtToken") ?? ""}`,
+					},
+					body: JSON.stringify({
+						isFavorite: !detailFile.isFavorite,
+					}),
+				},
+			);
+			setDetailFile({
+				...detailFile,
+				isFavorite: !detailFile.isFavorite,
+			});
+			setSelectedFile({
+				...detailFile,
+				isFavorite: !detailFile.isFavorite,
+			});
+		} catch (error) {
+			logError(
+				`PATCH /files/${detailFile.id}/favorite error: ${String(error)}`,
+			);
+			return;
+		}
+	};
 
 	useEffect(() => {
 		if (!id) return;
@@ -68,6 +102,7 @@ export default function Page() {
 					kind: file.kind,
 					previewObjectKey: file.previewObjectKey,
 					videoUrl: file.videoUrl,
+					isFavorite: file.isFavorite,
 				};
 
 				setDetailFile(response);
@@ -106,6 +141,31 @@ export default function Page() {
 						unoptimized
 					/>
 				)}
+			</div>
+			<div className="absolute bottom-20 right-10 flex flex-col space-y-4 items-center justify-center">
+				<button
+					type="button"
+					onClick={handleFavorite}
+					className="h-12 w-12 rounded-full bg-black flex items-center justify-center"
+				>
+					<Star
+						fill={detailFile.isFavorite ? "yellow" : "black"}
+						stroke={detailFile.isFavorite ? "yellow" : "white"}
+						className="h-6 w-6"
+					/>
+				</button>
+				<button
+					type="button"
+					className="h-12 w-12 rounded-full bg-black flex items-center justify-center"
+				>
+					<Tag fill="black" stroke="white" className="h-6 w-6" />
+				</button>
+				<button
+					type="button"
+					className="h-12 w-12 rounded-full bg-black flex items-center justify-center"
+				>
+					<MessageCircleMore fill="black" stroke="white" className="h-6 w-6" />
+				</button>
 			</div>
 		</div>
 	);

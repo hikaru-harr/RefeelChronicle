@@ -1,13 +1,14 @@
 import { prisma } from "../../../infra/db/prisma";
 import { toDomainFile, toDomainFiles } from "../../../infra/file/fileMapper";
 import type { File } from "../entity/File";
+import { FileKind as PrismaFileKind } from "../../../generated/prisma/enums";
 
 export interface CreateFileProps {
 	userId: string;
 	objectKey: string;
 	mime: string;
 	bytes: number;
-	kind: string;
+	kind: PrismaFileKind;
 }
 
 export interface GetFileByIdProps {
@@ -72,4 +73,25 @@ export async function getFileById(
 		where: { id: props.fileId, userId: props.userId },
 	});
 	return row ? toDomainFile(row) : null;
+}
+
+export interface UpdateFileFavoriteProps {
+	fileId: string;
+	userId: string;
+	isFavorite: boolean;
+}
+
+export async function updateFileFavorite(
+	props: UpdateFileFavoriteProps,
+): Promise<boolean> {
+	try {
+		await prisma.file.update({
+			where: { id: props.fileId, userId: props.userId },
+			data: { isFavorite: props.isFavorite },
+		});
+		return true
+	} catch (error) {
+		console.error(error);
+		return false;
+	}
 }

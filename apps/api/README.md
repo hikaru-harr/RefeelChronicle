@@ -70,3 +70,9 @@ apps/
     tsconfig.json
     vite.config.ts?       // Bun/CloudflareWorker 向けに必要なら
 ```
+
+### migrate
+pnpm prisma:migrate dev --name 〇〇
+
+型が参照しない時は
+pnpm prisma generate

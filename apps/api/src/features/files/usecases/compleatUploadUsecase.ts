@@ -6,6 +6,7 @@ import {
 	createFile,
 	setFilePreviewObjectKey,
 } from "../repository/fileRepository";
+import { FileKind as PrismaFileKind } from "../../../generated/prisma/enums";
 
 export interface FileWithPreview extends File {
 	previewUrl: string;
@@ -17,17 +18,15 @@ type CompleatInput = Omit<CreateFileProps, "kind">;
 export const compleatUploadUsecase = async (
 	props: CompleatInput,
 ): Promise<FileWithPreview> => {
-	const kind = props.mime.startsWith("image/")
-		? "image"
-		: props.mime.startsWith("video/")
-			? "video"
-			: "other";
+	const kind = props.mime.startsWith("video/")
+		? PrismaFileKind.video
+		: PrismaFileKind.file;
 	let file = await createFile({ ...props, kind });
 
 	let previewKey = file.objectKey;
 	let videoUrl: string | undefined;
 
-	if (kind === "video") {
+	if (kind === PrismaFileKind.video) {
 		try {
 			const thumbKey = await generateVideoThumbnail(file.objectKey);
 			await setFilePreviewObjectKey(file.id, thumbKey);
