@@ -73,3 +73,24 @@ export async function getFileById(
 	});
 	return row ? toDomainFile(row) : null;
 }
+
+export interface UpdateFileFavoriteProps {
+	fileId: string;
+	userId: string;
+	isFavorite: boolean;
+}
+
+export async function updateFileFavorite(
+	props: UpdateFileFavoriteProps,
+): Promise<boolean> {
+	try {
+		await prisma.file.update({
+			where: { id: props.fileId, userId: props.userId },
+			data: { isFavorite: props.isFavorite },
+		});
+		return true
+	} catch (error) {
+		console.error(error);
+		return false;
+	}
+}

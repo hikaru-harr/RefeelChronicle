@@ -6,6 +6,7 @@ import { compleatUploadUsecase } from "../features/files/usecases/compleatUpload
 import { createUploadPreSignedUrlUsecase } from "../features/files/usecases/createUploadPreSignedUrlUsecase";
 import { getFileUsecase } from "../features/files/usecases/getFileUsecase";
 import { listFilesUsecase } from "../features/files/usecases/listFilesUsecase";
+import { updateFileFavoriteUsecase } from "../features/files/usecases/updateFileFavoriteUsecase";
 
 export const fileRouter = new Hono<CheckedAppEnv>();
 
@@ -27,11 +28,25 @@ fileRouter.get("/", async (c) => {
 	return c.json({ files }, 200);
 });
 
+
+
 fileRouter.get("/:id", async (c) => {
 	const { userId } = c.var.currentUser;
 	const fileId = c.req.param("id");
 	const file = await getFileUsecase({ userId, fileId });
 	return c.json({ file }, 200);
+});
+
+const favoriteRequestSchema = z.object({
+	isFavorite: z.boolean(),
+});
+
+fileRouter.patch("/:id/favorite", zValidator("json", favoriteRequestSchema), async (c) => {
+	const { userId } = c.var.currentUser;
+	const fileId = c.req.param("id");
+	const { isFavorite } = c.req.valid("json");
+	const isUpdated = await updateFileFavoriteUsecase({ userId, fileId, isFavorite });
+	return c.json({ isUpdated }, isUpdated ? 200 : 400);
 });
 
 fileRouter.post(

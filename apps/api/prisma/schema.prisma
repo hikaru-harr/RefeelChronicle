@@ -20,6 +20,7 @@ model File {
   mime             String
   bytes            Int
   kind             String   @default("other")
+  isFavorite       Boolean  @default(false)
   previewObjectKey String?
   createdAt        DateTime @default(now())
 
