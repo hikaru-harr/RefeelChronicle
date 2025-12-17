@@ -47,7 +47,7 @@ function page() {
 						e.stopPropagation();
 						inputRef.current?.click();
 					}}
-					className="h-12 rounded-full w-12 cursor-pointer absolute bottom-10 right-10 [&_svg:not([class*='size-'])]:size-8"
+					className="h-[80px] rounded-full w-[80px] cursor-pointer absolute bottom-20 right-20 [&_svg:not([class*='size-'])]:size-8 z-50"
 				>
 					<Plus />
 				</Button>
