@@ -1,5 +1,5 @@
-import type { Prisma } from "../../generated/prisma/client";
 import type { File as DomainFile } from "../../features/files/entity/File";
+import type { Prisma } from "../../generated/prisma/client";
 
 type PrismaFile = Prisma.FileGetPayload<Prisma.FileDefaultArgs>;
 

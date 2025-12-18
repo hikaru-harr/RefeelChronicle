@@ -1,3 +1,4 @@
+import { FileKind as PrismaFileKind } from "../../../generated/prisma/enums";
 import { getPreSignedObjectUrl } from "../../../infra/bucket/bucket";
 import { generateVideoThumbnail } from "../../../infra/file/videoThumbnail";
 import type { File } from "../entity/File";
@@ -6,7 +7,6 @@ import {
 	createFile,
 	setFilePreviewObjectKey,
 } from "../repository/fileRepository";
-import { FileKind as PrismaFileKind } from "../../../generated/prisma/enums";
 
 export interface FileWithPreview extends File {
 	previewUrl: string;

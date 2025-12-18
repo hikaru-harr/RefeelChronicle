@@ -24,7 +24,6 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 
 	const [isUploading, setIsUploading] = useState(false);
 	const [files, setFiles] = useState<FileItem[]>([]);
-	 const [hasMore, setHasMore] = useState(true);
 
 	const getPreSignedUrl = async (
 		file: File,

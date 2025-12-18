@@ -53,8 +53,8 @@ const useAuth = () => {
 			});
 			return;
 		}
-		console.log(result);
-		router.push("/files");
+
+		router.replace("/files");
 		setRequestState({
 			isLoading: true,
 			error: null,

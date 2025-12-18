@@ -28,8 +28,6 @@ fileRouter.get("/", async (c) => {
 	return c.json({ files }, 200);
 });
 
-
-
 fileRouter.get("/:id", async (c) => {
 	const { userId } = c.var.currentUser;
 	const fileId = c.req.param("id");
@@ -41,13 +39,21 @@ const favoriteRequestSchema = z.object({
 	isFavorite: z.boolean(),
 });
 
-fileRouter.patch("/:id/favorite", zValidator("json", favoriteRequestSchema), async (c) => {
-	const { userId } = c.var.currentUser;
-	const fileId = c.req.param("id");
-	const { isFavorite } = c.req.valid("json");
-	const isUpdated = await updateFileFavoriteUsecase({ userId, fileId, isFavorite });
-	return c.json({ isUpdated }, isUpdated ? 200 : 400);
-});
+fileRouter.patch(
+	"/:id/favorite",
+	zValidator("json", favoriteRequestSchema),
+	async (c) => {
+		const { userId } = c.var.currentUser;
+		const fileId = c.req.param("id");
+		const { isFavorite } = c.req.valid("json");
+		const isUpdated = await updateFileFavoriteUsecase({
+			userId,
+			fileId,
+			isFavorite,
+		});
+		return c.json({ isUpdated }, isUpdated ? 200 : 400);
+	},
+);
 
 fileRouter.post(
 	"/pre-sign",

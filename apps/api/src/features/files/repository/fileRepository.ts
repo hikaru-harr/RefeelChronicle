@@ -1,7 +1,7 @@
+import type { FileKind as PrismaFileKind } from "../../../generated/prisma/enums";
 import { prisma } from "../../../infra/db/prisma";
 import { toDomainFile, toDomainFiles } from "../../../infra/file/fileMapper";
 import type { File } from "../entity/File";
-import { FileKind as PrismaFileKind } from "../../../generated/prisma/enums";
 
 export interface CreateFileProps {
 	userId: string;
@@ -89,7 +89,7 @@ export async function updateFileFavorite(
 			where: { id: props.fileId, userId: props.userId },
 			data: { isFavorite: props.isFavorite },
 		});
-		return true
+		return true;
 	} catch (error) {
 		console.error(error);
 		return false;

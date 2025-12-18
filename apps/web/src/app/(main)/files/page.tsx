@@ -2,18 +2,18 @@
 
 import { ChevronLeft, ChevronRight, Play, Plus } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useSelectedFileStore } from "@/features/file/useSelectedFileStore";
-import useUploadFile from "@/features/file/useUploadFile";
+import { FileDetailView } from "@/features/file/FileDetailView";
+import useUploadFile, { type FileItem } from "@/features/file/useUploadFile";
 import useTimeLine from "@/features/timeLine/useTimeLine";
 
 function page() {
-	const setSelectedFile = useSelectedFileStore(
-		(state) => state.setSelectedFile,
-	);
+	const router = useRouter();
+	const [selectedFile, setSelectedFile] = useState<FileItem | null>(null);
+
 	const inputRef = useRef<HTMLInputElement | null>(null);
 
 	const { yearMonthParam, label, handlePrevMonth, handleNextMonth, canGoNext } =
@@ -23,8 +23,27 @@ function page() {
 		yearMonthParam,
 	});
 
+	const previewFile = (file: FileItem) => {
+		setSelectedFile(file);
+		window.history.pushState(null, "", `/files/${file.id}`);
+	};
+
+	useEffect(() => {
+		window.addEventListener("popstate", () => setSelectedFile(null));
+		return () =>
+			window.removeEventListener("popstate", () => setSelectedFile(null));
+	}, []);
+
+	const closeModal = () => {
+		router.push("/files");
+		setSelectedFile(null);
+	};
+
 	return (
 		<div>
+			{selectedFile && (
+				<FileDetailView file={selectedFile} onClose={() => closeModal()} />
+			)}
 			<div className="flex items-center justify-between gap-4 w-full">
 				<Button variant="ghost" onClick={handlePrevMonth}>
 					<ChevronLeft />
@@ -47,7 +66,7 @@ function page() {
 						e.stopPropagation();
 						inputRef.current?.click();
 					}}
-					className="h-[80px] rounded-full w-[80px] cursor-pointer absolute bottom-20 right-20 [&_svg:not([class*='size-'])]:size-8 z-50"
+					className="h-[80px] rounded-full w-[80px] cursor-pointer absolute bottom-20 right-20 [&_svg:not([class*='size-'])]:size-8 z-30"
 				>
 					<Plus />
 				</Button>
@@ -69,11 +88,11 @@ function page() {
 			</div>
 			<div className="grid grid-cols-3">
 				{files.map((file) => (
-					<Link
+					<button
 						key={file.id}
-						href={`/files/${file.id}`}
+						type="button"
+						onClick={() => previewFile(file)}
 						className="relative aspect-square overflow-hidden"
-						onClick={() => setSelectedFile(file)}
 					>
 						<Image
 							src={file.previewUrl}
@@ -91,7 +110,7 @@ function page() {
 								</div>
 							</div>
 						)}
-					</Link>
+					</button>
 				))}
 			</div>
 		</div>
