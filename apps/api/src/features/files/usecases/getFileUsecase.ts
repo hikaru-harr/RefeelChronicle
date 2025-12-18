@@ -14,8 +14,12 @@ export const getFileUsecase = async ({
 	if (!file) {
 		throw new Error("File not found");
 	}
-	const key = file.previewObjectKey ?? file.objectKey;
-	const previewUrl = await getPreSignedObjectUrl(key);
+
+	if (!file.originalObjectKey) {
+		throw new Error("File not found");
+	}
+
+	const previewUrl = await getPreSignedObjectUrl(file.originalObjectKey);
 	let videoUrl: string | undefined;
 	if (file.kind === "video") {
 		videoUrl = await getPreSignedObjectUrl(file.objectKey);

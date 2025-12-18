@@ -47,11 +47,12 @@ export function FileDetailView({
 	};
 
 	useEffect(() => {
-		if (!id) return;
+		const requestId = file?.id ?? id;
+		if (!requestId) return;
 		const init = async () => {
-			logInfo(`GET /files/${id} start`);
+			logInfo(`GET /files/${requestId} start`);
 			const result = await fetch(
-				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/${id}`,
+				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/${requestId}`,
 				{
 					method: "GET",
 					headers: {
@@ -68,8 +69,7 @@ export function FileDetailView({
 			setDetailFile(response.file);
 		};
 		init();
-	}, [id, logError, logInfo]);
-
+	}, [id, file, logError, logInfo]);
 	if (!detailFile) return <div>loading...</div>;
 
 	return (

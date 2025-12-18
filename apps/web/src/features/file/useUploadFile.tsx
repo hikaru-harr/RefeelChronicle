@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLogger } from "@/lib/context/LoggerContext";
+import { buildThumbForUpload } from "@/features/file/imageThumb";
 
 export interface FileItem {
 	id: string;
@@ -12,6 +13,7 @@ export interface FileItem {
 	kind: "image" | "video" | "other";
 	previewObjectKey: string;
 	isFavorite: boolean;
+	originalObjectKey?: string;
 	videoUrl?: string;
 }
 
@@ -86,32 +88,48 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 			logError(`handleSelectFiles error: ${fileList.length}`);
 			return;
 		}
-		let flag = true;
-		const errorList = [];
 		const uploadFileList: FileItem[] = [];
 		for (const file of fileList) {
-			const result = await getPreSignedUrl(file);
-			if (!result) {
-				flag = false;
-				errorList.push({
-					fileName: file.name,
-					error: "Failed to get pre-signed URL",
-				});
-				continue;
+			const isImage =
+				file.type.startsWith("image/") ||
+				file.name.toLowerCase().endsWith(".heic") ||
+				file.name.toLowerCase().endsWith(".heif");
+			const isVideo = file.type.startsWith("video/");
+
+			let originalForUpload = file;
+			let thumbForUpload: File | null = null;
+
+			if (isImage) {
+				const built = await buildThumbForUpload(file);
+				originalForUpload = built.normalizedOriginal;
+				thumbForUpload = built.thumb;
 			}
-			const uploadResult = await uploadFile(result.preSignedUrl, file);
-			if (!uploadResult) {
-				flag = false;
-				errorList.push({
-					fileName: file.name,
-					error: "Failed to upload file",
-				});
+
+			const originalPresign = await getPreSignedUrl(originalForUpload);
+			if (!originalPresign) {
 				continue;
 			}
 
-			logInfo(
-				`compleat start ${process.env.NEXT_PUBLIC_API_TARGET}/api/files/compleat`,
+			const originalUploadOk = await uploadFile(
+				originalPresign.preSignedUrl,
+				originalForUpload,
 			);
+			if (!originalUploadOk) {
+				continue;
+			}
+
+			let previewObjectKey = originalPresign.objectKey;
+			if (thumbForUpload) {
+				const thumbPresign = await getPreSignedUrl(thumbForUpload);
+				if (thumbPresign) {
+					const thumbUploadOk = await uploadFile(
+						thumbPresign.preSignedUrl,
+						thumbForUpload,
+					);
+					if (thumbUploadOk) previewObjectKey = thumbPresign.objectKey;
+				}
+			}
+
 			const compleatResult = await fetch(
 				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/compleat`,
 				{
@@ -121,20 +139,18 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 						Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
 					},
 					body: JSON.stringify({
-						objectKey: result.objectKey,
-						mime: file.type,
-						bytes: file.size,
+						objectKey: originalPresign.objectKey,
+						previewObjectKey,
+						mime: originalForUpload.type,
+						bytes: originalForUpload.size,
+						kind: isImage ? "image" : isVideo ? "video" : "other",
 					}),
 				},
 			);
-			logInfo(
-				`compleat success ${process.env.NEXT_PUBLIC_API_TARGET}/api/files/compleat`,
-			);
+
 			uploadFileList.push(await compleatResult.json());
 		}
-		if (!flag) {
-			logError(`errorList ${errorList}`);
-		}
+
 		setFiles((prev) => [...uploadFileList, ...prev]);
 
 		setIsUploading(false);

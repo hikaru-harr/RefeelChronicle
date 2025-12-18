@@ -6,6 +6,7 @@ import type { File } from "../entity/File";
 export interface CreateFileProps {
 	userId: string;
 	objectKey: string;
+	previewObjectKey: string;
 	mime: string;
 	bytes: number;
 	kind: PrismaFileKind;
@@ -21,6 +22,8 @@ export async function createFile(props: CreateFileProps): Promise<File> {
 		data: {
 			userId: props.userId,
 			objectKey: props.objectKey,
+			originalObjectKey: props.objectKey,
+			previewObjectKey: props.previewObjectKey,
 			mime: props.mime,
 			bytes: props.bytes,
 			kind: props.kind,

@@ -17,8 +17,10 @@ const preSignRequestSchema = z.object({
 
 const compleatRequestSchema = z.object({
 	objectKey: z.string(),
+	previewObjectKey: z.string(),
 	mime: z.string(),
 	bytes: z.number(),
+	kind: z.string(),
 });
 
 fileRouter.get("/", async (c) => {
@@ -85,11 +87,12 @@ fileRouter.post(
 	async (c) => {
 		const { userId } = c.var.currentUser;
 
-		const { objectKey, mime, bytes } = c.req.valid("json");
+		const { objectKey, previewObjectKey, mime, bytes } = c.req.valid("json");
 
 		const fileWithPreview = await compleatUploadUsecase({
 			userId,
 			objectKey,
+			previewObjectKey,
 			mime,
 			bytes,
 		});

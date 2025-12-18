@@ -10,6 +10,7 @@ interface ListFilesUsecaseInput {
 
 export interface FileWithPreview extends File {
 	previewUrl: string;
+	originalUrl?: string;
 	videoUrl?: string;
 }
 

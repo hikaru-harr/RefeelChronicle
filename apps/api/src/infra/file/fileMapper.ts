@@ -13,6 +13,7 @@ export function toDomainFile(row: PrismaFile): DomainFile {
 		kind: row.kind,
 		isFavorite: row.isFavorite,
 		previewObjectKey: row.previewObjectKey,
+		originalObjectKey: row.originalObjectKey,
 		createdAt: row.createdAt,
 	};
 }
