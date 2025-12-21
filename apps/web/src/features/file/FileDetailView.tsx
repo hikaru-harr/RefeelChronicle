@@ -17,10 +17,8 @@ export function FileDetailView({
 	onClose: () => void;
 	id?: string;
 }) {
-	console.log(file, id);
 	const { logInfo, logError } = useLogger();
 	const [detailFile, setDetailFile] = useState<FileItem | null>(file ?? null);
-	console.log(detailFile, !detailFile);
 	const handleFavorite = async () => {
 		if (!detailFile) return;
 		try {
