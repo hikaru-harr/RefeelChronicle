@@ -17,8 +17,10 @@ const preSignRequestSchema = z.object({
 
 const compleatRequestSchema = z.object({
 	objectKey: z.string(),
+	previewObjectKey: z.string(),
 	mime: z.string(),
 	bytes: z.number(),
+	kind: z.string(),
 });
 
 fileRouter.get("/", async (c) => {
@@ -27,8 +29,6 @@ fileRouter.get("/", async (c) => {
 	const files = await listFilesUsecase({ userId, yearMonth });
 	return c.json({ files }, 200);
 });
-
-
 
 fileRouter.get("/:id", async (c) => {
 	const { userId } = c.var.currentUser;
@@ -41,13 +41,21 @@ const favoriteRequestSchema = z.object({
 	isFavorite: z.boolean(),
 });
 
-fileRouter.patch("/:id/favorite", zValidator("json", favoriteRequestSchema), async (c) => {
-	const { userId } = c.var.currentUser;
-	const fileId = c.req.param("id");
-	const { isFavorite } = c.req.valid("json");
-	const isUpdated = await updateFileFavoriteUsecase({ userId, fileId, isFavorite });
-	return c.json({ isUpdated }, isUpdated ? 200 : 400);
-});
+fileRouter.patch(
+	"/:id/favorite",
+	zValidator("json", favoriteRequestSchema),
+	async (c) => {
+		const { userId } = c.var.currentUser;
+		const fileId = c.req.param("id");
+		const { isFavorite } = c.req.valid("json");
+		const isUpdated = await updateFileFavoriteUsecase({
+			userId,
+			fileId,
+			isFavorite,
+		});
+		return c.json({ isUpdated }, isUpdated ? 200 : 400);
+	},
+);
 
 fileRouter.post(
 	"/pre-sign",
@@ -79,11 +87,12 @@ fileRouter.post(
 	async (c) => {
 		const { userId } = c.var.currentUser;
 
-		const { objectKey, mime, bytes } = c.req.valid("json");
+		const { objectKey, previewObjectKey, mime, bytes } = c.req.valid("json");
 
 		const fileWithPreview = await compleatUploadUsecase({
 			userId,
 			objectKey,
+			previewObjectKey,
 			mime,
 			bytes,
 		});

@@ -8,6 +8,7 @@ export type File = {
 	bytes: number;
 	kind: PrismaFileKind;
 	previewObjectKey: string | null;
+	originalObjectKey: string | null;
 	isFavorite: boolean;
 	createdAt: Date;
 };

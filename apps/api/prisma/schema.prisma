@@ -27,7 +27,8 @@ model File {
   bytes            Int
   kind             FileKind @default(other)
   isFavorite       Boolean  @default(false)
-  previewObjectKey String?
+  previewObjectKey String?  // 画像ファイルのサムネイル
+  originalObjectKey String? // 画像ファイルのオリジナル
   createdAt        DateTime @default(now())
 
   @@index([userId, createdAt])

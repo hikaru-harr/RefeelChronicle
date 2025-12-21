@@ -6,7 +6,11 @@ interface UpdateFileFavoriteUsecaseInput {
 	isFavorite: boolean;
 }
 
-export const updateFileFavoriteUsecase = async ({ userId, fileId, isFavorite }: UpdateFileFavoriteUsecaseInput): Promise<boolean> => {
+export const updateFileFavoriteUsecase = async ({
+	userId,
+	fileId,
+	isFavorite,
+}: UpdateFileFavoriteUsecaseInput): Promise<boolean> => {
 	const isUpdated = await updateFileFavorite({ userId, fileId, isFavorite });
-    return isUpdated;
-}
+	return isUpdated;
+};

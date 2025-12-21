@@ -1,5 +1,5 @@
-import type { Prisma } from "../../generated/prisma/client";
 import type { File as DomainFile } from "../../features/files/entity/File";
+import type { Prisma } from "../../generated/prisma/client";
 
 type PrismaFile = Prisma.FileGetPayload<Prisma.FileDefaultArgs>;
 
@@ -13,6 +13,7 @@ export function toDomainFile(row: PrismaFile): DomainFile {
 		kind: row.kind,
 		isFavorite: row.isFavorite,
 		previewObjectKey: row.previewObjectKey,
+		originalObjectKey: row.originalObjectKey,
 		createdAt: row.createdAt,
 	};
 }

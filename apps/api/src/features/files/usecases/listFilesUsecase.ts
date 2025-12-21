@@ -1,7 +1,7 @@
+import { FileKind as PrismaFileKind } from "../../../generated/prisma/enums";
 import { getPreSignedObjectUrl } from "../../../infra/bucket/bucket";
-import { listFilesByUserAndMonth } from "../repository/fileRepository";
-import { FileKind as PrismaFileKind } from "../../../generated/prisma/enums"
 import type { File } from "../entity/File";
+import { listFilesByUserAndMonth } from "../repository/fileRepository";
 
 interface ListFilesUsecaseInput {
 	userId: string;
@@ -10,6 +10,7 @@ interface ListFilesUsecaseInput {
 
 export interface FileWithPreview extends File {
 	previewUrl: string;
+	originalUrl?: string;
 	videoUrl?: string;
 }
 

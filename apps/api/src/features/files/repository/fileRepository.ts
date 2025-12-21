@@ -1,11 +1,12 @@
+import type { FileKind as PrismaFileKind } from "../../../generated/prisma/enums";
 import { prisma } from "../../../infra/db/prisma";
 import { toDomainFile, toDomainFiles } from "../../../infra/file/fileMapper";
 import type { File } from "../entity/File";
-import { FileKind as PrismaFileKind } from "../../../generated/prisma/enums";
 
 export interface CreateFileProps {
 	userId: string;
 	objectKey: string;
+	previewObjectKey: string;
 	mime: string;
 	bytes: number;
 	kind: PrismaFileKind;
@@ -21,6 +22,8 @@ export async function createFile(props: CreateFileProps): Promise<File> {
 		data: {
 			userId: props.userId,
 			objectKey: props.objectKey,
+			originalObjectKey: props.objectKey,
+			previewObjectKey: props.previewObjectKey,
 			mime: props.mime,
 			bytes: props.bytes,
 			kind: props.kind,
@@ -89,7 +92,7 @@ export async function updateFileFavorite(
 			where: { id: props.fileId, userId: props.userId },
 			data: { isFavorite: props.isFavorite },
 		});
-		return true
+		return true;
 	} catch (error) {
 		console.error(error);
 		return false;
