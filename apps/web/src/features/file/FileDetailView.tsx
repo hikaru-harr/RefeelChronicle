@@ -1,12 +1,17 @@
 "use client";
 
 import { format } from "date-fns";
-import { ChevronLeft, MessageCircleMore, Star, Tag } from "lucide-react";
+import {
+	ChevronLeft,
+	Loader,
+	MessageCircleMore,
+	Star,
+	Tag,
+} from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { FileItem } from "@/features/file/useUploadFile";
-import { useLogger } from "@/lib/context/LoggerContext";
+import { useDetailFile } from "./useDetailFile";
 
 export function FileDetailView({
 	file,
@@ -17,58 +22,14 @@ export function FileDetailView({
 	onClose: () => void;
 	id?: string;
 }) {
-	const { logInfo, logError } = useLogger();
-	const [detailFile, setDetailFile] = useState<FileItem | null>(file ?? null);
-	const handleFavorite = async () => {
-		if (!detailFile) return;
-		try {
-			logInfo(`PATCH /files/${detailFile.id}/favorite start`);
-			await fetch(
-				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/${detailFile.id}/favorite`,
-				{
-					method: "PATCH",
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${localStorage.getItem("jwtToken") ?? ""}`,
-					},
-					body: JSON.stringify({ isFavorite: !detailFile.isFavorite }),
-				},
-			);
+	const { detailFile, handleFavorite } = useDetailFile({ id, file });
 
-			const updatedFile = { ...detailFile, isFavorite: !detailFile.isFavorite };
-			setDetailFile(updatedFile);
-		} catch (error) {
-			logError(
-				`PATCH /files/${detailFile?.id}/favorite error: ${String(error)}`,
-			);
-		}
-	};
-
-	useEffect(() => {
-		const requestId = file?.id ?? id;
-		if (!requestId) return;
-		const init = async () => {
-			logInfo(`GET /files/${requestId} start`);
-			const result = await fetch(
-				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/${requestId}`,
-				{
-					method: "GET",
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${localStorage.getItem("jwtToken") ?? ""}`,
-					},
-				},
-			);
-			const response = await result.json();
-			if (!response) {
-				logError(`GET /files/${id} error: ${String(response)}`);
-				return;
-			}
-			setDetailFile(response.file);
-		};
-		init();
-	}, [id, file, logError, logInfo]);
-	if (!detailFile) return <div>loading...</div>;
+	if (!detailFile)
+		return (
+			<div className="animate-spin">
+				<Loader />
+			</div>
+		);
 
 	return (
 		<div className="fixed inset-0 flex items-center justify-center z-50 bg-white">

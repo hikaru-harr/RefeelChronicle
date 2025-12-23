@@ -46,6 +46,7 @@ fileRouter.patch(
 	zValidator("json", favoriteRequestSchema),
 	async (c) => {
 		const { userId } = c.var.currentUser;
+		console.log('kokoo')
 		const fileId = c.req.param("id");
 		const { isFavorite } = c.req.valid("json");
 		const isUpdated = await updateFileFavoriteUsecase({

@@ -4,7 +4,7 @@ import { buildThumbForUpload } from "@/features/file/imageThumb";
 import { getPreSignedUrl } from "../api/files/pre-sign";
 import { uploadFile } from "../api/files/upload";
 import { uploadFileCompleat } from "../api/files/compleat";
-import { getFiles } from "../api/files/get";
+import { getFiles } from "../api/files/getFiles";
 
 export interface FileItem {
 	id: string;
