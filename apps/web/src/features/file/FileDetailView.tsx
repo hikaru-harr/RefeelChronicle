@@ -4,14 +4,20 @@ import { format } from "date-fns";
 import {
 	ChevronLeft,
 	Loader,
+	MessageCircle,
 	MessageCircleMore,
+	Send,
 	Star,
 	Tag,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import type { FileItem } from "@/features/file/useUploadFile";
-import { useDetailFile } from "./useDetailFile";
+import {
+	useDetailFile,
+} from "./useDetailFile";
+import { Input } from "@/components/ui/input";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 
 export function FileDetailView({
 	file,
@@ -22,7 +28,11 @@ export function FileDetailView({
 	onClose: () => void;
 	id?: string;
 }) {
-	const { detailFile, handleFavorite } = useDetailFile({ id, file });
+	const { detailFile, handleFavorite, onSubmitComment, commentForm } = useDetailFile({
+		id,
+		file,
+	});
+
 
 	if (!detailFile)
 		return (
@@ -47,25 +57,58 @@ export function FileDetailView({
 
 					<div className="justify-self-end" />
 				</div>
-
-				{detailFile.kind === "video" ? (
-					// biome-ignore lint/a11y/useMediaCaption: 開発中のためキャプションは後で追加予定
-					<video
-						controls
-						preload="metadata"
-						src={detailFile.videoUrl ?? undefined}
-					/>
-				) : (
-					<Image
-						src={detailFile.previewUrl}
-						alt={detailFile.objectKey}
-						fill
-						className="object-contain"
-						sizes="100vw"
-						unoptimized
-						loading="eager"
-					/>
-				)}
+				<div>
+					{detailFile.kind === "video" ? (
+						// biome-ignore lint/a11y/useMediaCaption: 開発中のためキャプションは後で追加予定
+						<video
+							controls
+							preload="metadata"
+							src={detailFile.videoUrl ?? undefined}
+						/>
+					) : (
+						<Image
+							src={detailFile.previewUrl}
+							alt={detailFile.objectKey}
+							fill
+							className="object-contain"
+							sizes="100vw"
+							unoptimized
+							loading="eager"
+						/>
+					)}
+					<div className="absolute bottom-0 left-0 p-2 pb-4 flex w-full">
+						<div className="w-full relative">
+							<Form {...commentForm}>
+								<form
+									onSubmit={commentForm.handleSubmit(onSubmitComment)}
+									className="relative flex w-full"
+								>
+									<FormField
+										control={commentForm.control}
+										name="comment"
+										render={({ field }) => (
+											<FormItem className="w-full">
+												<FormControl>
+													<Input
+														placeholder="コメントを入力してください"
+														{...field}
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+									<Button
+										variant="ghost"
+										type="submit"
+										className="absolute right-0"
+									>
+										<Send />
+									</Button>
+								</form>
+							</Form>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<div className="absolute bottom-20 right-10 flex flex-col space-y-4 items-center justify-center">
@@ -92,7 +135,20 @@ export function FileDetailView({
 					type="button"
 					className="h-12 w-12 rounded-full bg-black flex items-center justify-center"
 				>
-					<MessageCircleMore fill="black" stroke="white" className="h-6 w-6" />
+					{detailFile.fileComments.length > 0 ? (
+						<div className="relative">
+							<MessageCircle fill="black" stroke="white" className="h-7 w-7" />
+							<p className="absolute top-[6px] right-[6px] w-4 h-4 rounded-full flex items-center justify-center text-white text-xs font-bold">
+								{detailFile.fileComments.length}
+							</p>
+						</div>
+					) : (
+						<MessageCircleMore
+							fill="black"
+							stroke="white"
+							className="h-6 w-6"
+						/>
+					)}
 				</button>
 			</div>
 		</div>

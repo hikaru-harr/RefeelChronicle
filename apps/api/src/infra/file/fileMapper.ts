@@ -1,9 +1,22 @@
 import type { File as DomainFile } from "../../features/files/entity/File";
-import type { Prisma } from "../../generated/prisma/client";
+import type { FileComment, Prisma } from "../../generated/prisma/client";
 
-type PrismaFile = Prisma.FileGetPayload<Prisma.FileDefaultArgs>;
+type PrismaFileWithComments = Prisma.FileGetPayload<{
+  include: { fileComments: true };
+}>;
 
-export function toDomainFile(row: PrismaFile): DomainFile {
+function toDomainFileComment(row: PrismaFileWithComments["fileComments"][number]): FileComment {
+  return {
+    id: row.id,
+    userId: row.userId,
+    fileId: row.fileId,
+    comment: row.comment,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+}
+
+export function toDomainFile(row: PrismaFileWithComments): DomainFile {
 	return {
 		id: row.id,
 		userId: row.userId,
@@ -15,9 +28,12 @@ export function toDomainFile(row: PrismaFile): DomainFile {
 		previewObjectKey: row.previewObjectKey,
 		originalObjectKey: row.originalObjectKey,
 		createdAt: row.createdAt,
+		contentHash: row.contentHash,
+
+		fileComments: row.fileComments.map(toDomainFileComment),
 	};
 }
 
-export function toDomainFiles(rows: PrismaFile[]): DomainFile[] {
+export function toDomainFiles(rows: PrismaFileWithComments[]): DomainFile[] {
 	return rows.map(toDomainFile);
 }

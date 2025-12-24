@@ -19,6 +19,7 @@ export interface FileItem {
 	isFavorite: boolean;
 	originalObjectKey?: string;
 	videoUrl?: string;
+	fileComments: string[];
 }
 
 interface Props {

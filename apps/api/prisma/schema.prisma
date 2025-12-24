@@ -20,16 +20,32 @@ enum FileKind {
 }
 
 model File {
-  id               String   @id @default(uuid())
-  userId           String
-  objectKey        String   @unique
-  mime             String
-  bytes            Int
-  kind             FileKind @default(other)
-  isFavorite       Boolean  @default(false)
-  previewObjectKey String?  // 画像ファイルのサムネイル
+  id                String        @id @default(uuid())
+  userId            String
+  objectKey         String        @unique
+  mime              String
+  bytes             Int
+  kind              FileKind      @default(other)
+  isFavorite        Boolean       @default(false)
+  contentHash       String?
+  previewObjectKey  String? // 画像ファイルのサムネイル
   originalObjectKey String? // 画像ファイルのオリジナル
-  createdAt        DateTime @default(now())
+  createdAt         DateTime      @default(now())
+  fileComments      FileComment[]
 
+  @@index([userId, createdAt])
+}
+
+model FileComment {
+  id        String   @id @default(uuid())
+  userId    String
+  fileId    String
+  comment   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  file File @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@index([fileId, createdAt])
   @@index([userId, createdAt])
 }

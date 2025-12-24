@@ -7,6 +7,7 @@ import { createUploadPreSignedUrlUsecase } from "../features/files/usecases/crea
 import { getFileUsecase } from "../features/files/usecases/getFileUsecase";
 import { listFilesUsecase } from "../features/files/usecases/listFilesUsecase";
 import { updateFileFavoriteUsecase } from "../features/files/usecases/updateFileFavoriteUsecase";
+import { updateFileCommentUsecase } from "../features/files/usecases/updateFileCommentUsecase";
 
 export const fileRouter = new Hono<CheckedAppEnv>();
 
@@ -98,5 +99,27 @@ fileRouter.post(
 			bytes,
 		});
 		return c.json(fileWithPreview, 201);
+	},
+);
+
+const commentRequestSchema = z.object({
+	comment: z.string(),
+});
+
+fileRouter.post(
+	"/:id/comment",
+	zValidator("json", commentRequestSchema),
+	async (c) => {
+		const { userId } = c.var.currentUser;
+
+		const { comment } = c.req.valid("json");
+		const fileId = c.req.param("id");
+
+		const fileWithPreview = await updateFileCommentUsecase({
+			userId,
+			fileId,
+			comment,
+		});
+		return c.json(fileWithPreview, 200);
 	},
 );
