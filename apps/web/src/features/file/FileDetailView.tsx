@@ -13,10 +13,8 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import type { FileItem } from "@/features/file/useUploadFile";
-import { useDetailFile } from "./useDetailFile";
-import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
 	Sheet,
 	SheetContent,
@@ -24,6 +22,8 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
+import type { FileItem } from "@/features/file/useUploadFile";
+import { useDetailFile } from "./useDetailFile";
 
 export function FileDetailView({
 	file,

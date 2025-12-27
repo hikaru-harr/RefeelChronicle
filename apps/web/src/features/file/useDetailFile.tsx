@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
-import { favorite, getDetail } from "../api/files";
-import type { DetailFile, FileItem } from "./useUploadFile";
-import z from "zod";
-import { comment, deleteComment } from "../api/files/comment";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import z from "zod";
+import { favorite, getDetail } from "../api/files";
+import { comment, deleteComment } from "../api/files/comment";
+import type { DetailFile, FileItem } from "./useUploadFile";
 
 interface Props {
 	id?: string;

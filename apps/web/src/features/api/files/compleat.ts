@@ -15,15 +15,12 @@ export const uploadFileCompleat = async ({
 	bytes,
 	kind,
 }: Props) => {
-    const compleatResult = await api.post(
-        `/api/files/compleat`,
-        {
-            objectKey,
-            previewObjectKey,
-            mime,
-            bytes,
-            kind,
-        },
-    );
-    return compleatResult.data;
-}
+	const compleatResult = await api.post(`/api/files/compleat`, {
+		objectKey,
+		previewObjectKey,
+		mime,
+		bytes,
+		kind,
+	});
+	return compleatResult.data;
+};

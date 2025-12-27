@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useLogger } from "@/lib/context/LoggerContext";
 import { buildThumbForUpload } from "@/features/file/imageThumb";
-import { getPreSignedUrl } from "../api/files/pre-sign";
-import { uploadFile } from "../api/files/upload";
+import { useLogger } from "@/lib/context/LoggerContext";
 import { uploadFileCompleat } from "../api/files/compleat";
 import { getFiles } from "../api/files/getFiles";
+import { getPreSignedUrl } from "../api/files/pre-sign";
+import { uploadFile } from "../api/files/upload";
 
 export interface FileItem {
 	id: string;
@@ -39,7 +39,7 @@ interface Props {
 }
 
 const useUploadFile = ({ yearMonthParam }: Props) => {
-	const { logInfo, logError } = useLogger();
+	const { logError } = useLogger();
 
 	const [isUploading, setIsUploading] = useState(false);
 	const [files, setFiles] = useState<FileItem[]>([]);

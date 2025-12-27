@@ -2,18 +2,20 @@ import type { File as DomainFile } from "../../features/files/entity/File";
 import type { FileComment, Prisma } from "../../generated/prisma/client";
 
 type PrismaFileWithComments = Prisma.FileGetPayload<{
-  include: { fileComments: true };
+	include: { fileComments: true };
 }>;
 
-function toDomainFileComment(row: PrismaFileWithComments["fileComments"][number]): FileComment {
-  return {
-    id: row.id,
-    userId: row.userId,
-    fileId: row.fileId,
-    comment: row.comment,
-    createdAt: row.createdAt,
-    updatedAt: row.updatedAt,
-  };
+function toDomainFileComment(
+	row: PrismaFileWithComments["fileComments"][number],
+): FileComment {
+	return {
+		id: row.id,
+		userId: row.userId,
+		fileId: row.fileId,
+		comment: row.comment,
+		createdAt: row.createdAt,
+		updatedAt: row.updatedAt,
+	};
 }
 
 export function toDomainFile(row: PrismaFileWithComments): DomainFile {

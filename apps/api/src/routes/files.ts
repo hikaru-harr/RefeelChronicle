@@ -4,11 +4,11 @@ import { z } from "zod";
 import type { CheckedAppEnv } from "../app";
 import { compleatUploadUsecase } from "../features/files/usecases/compleatUploadUsecase";
 import { createUploadPreSignedUrlUsecase } from "../features/files/usecases/createUploadPreSignedUrlUsecase";
+import { deleteFileCommentUsecase } from "../features/files/usecases/deleteFileCommentUsecase";
 import { getFileUsecase } from "../features/files/usecases/getFileUsecase";
 import { listFilesUsecase } from "../features/files/usecases/listFilesUsecase";
-import { updateFileFavoriteUsecase } from "../features/files/usecases/updateFileFavoriteUsecase";
 import { updateFileCommentUsecase } from "../features/files/usecases/updateFileCommentUsecase";
-import { deleteFileCommentUsecase } from "../features/files/usecases/deleteFileCommentUsecase";
+import { updateFileFavoriteUsecase } from "../features/files/usecases/updateFileFavoriteUsecase";
 
 export const fileRouter = new Hono<CheckedAppEnv>();
 
@@ -48,7 +48,7 @@ fileRouter.patch(
 	zValidator("json", favoriteRequestSchema),
 	async (c) => {
 		const { userId } = c.var.currentUser;
-		console.log('kokoo')
+		console.log("kokoo");
 		const fileId = c.req.param("id");
 		const { isFavorite } = c.req.valid("json");
 		const isUpdated = await updateFileFavoriteUsecase({
@@ -121,29 +121,26 @@ fileRouter.post(
 			fileId,
 			comment,
 		});
-		if(!fileComment) {
+		if (!fileComment) {
 			return c.json(null, 400);
 		}
 		return c.json(fileComment, 200);
 	},
 );
 
-fileRouter.delete(
-	"/:id/comment/:commentId",
-	async (c) => {
-		const { userId } = c.var.currentUser;
+fileRouter.delete("/:id/comment/:commentId", async (c) => {
+	const { userId } = c.var.currentUser;
 
-		const fileId = c.req.param("id");
-		const commentId = c.req.param("commentId");
+	const fileId = c.req.param("id");
+	const commentId = c.req.param("commentId");
 
-		const fileComment = await deleteFileCommentUsecase({
-			userId,
-			fileId,
-			commentId,
-		});
-		if(!fileComment) {
-			return c.json(null, 400);
-		}
-		return c.json(fileComment, 200);
-	},
-);
+	const fileComment = await deleteFileCommentUsecase({
+		userId,
+		fileId,
+		commentId,
+	});
+	if (!fileComment) {
+		return c.json(null, 400);
+	}
+	return c.json(fileComment, 200);
+});

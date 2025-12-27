@@ -1,7 +1,7 @@
 "use client";
 
-import { VirtuosoGrid } from "react-virtuoso";
 import Image from "next/image";
+import { VirtuosoGrid } from "react-virtuoso";
 import type { FileItem } from "./useUploadFile";
 
 export function VirtualFileGrid({
