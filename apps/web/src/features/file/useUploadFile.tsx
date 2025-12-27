@@ -19,7 +19,19 @@ export interface FileItem {
 	isFavorite: boolean;
 	originalObjectKey?: string;
 	videoUrl?: string;
-	fileComments: string[];
+}
+
+export interface FileComment {
+	id: string;
+	userId: string;
+	fileId: string;
+	comment: string;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+export interface DetailFile extends FileItem {
+	fileComments: FileComment[];
 }
 
 interface Props {
@@ -102,7 +114,7 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 	useEffect(() => {
 		const init = async () => {
 			const result = await getFiles(yearMonthParam);
-			console.log(result)
+			console.log(result);
 			setFiles(result);
 		};
 		init();

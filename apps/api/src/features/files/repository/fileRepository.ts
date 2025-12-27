@@ -1,7 +1,8 @@
 import type { FileKind as PrismaFileKind } from "../../../generated/prisma/enums";
 import { prisma } from "../../../infra/db/prisma";
 import { toDomainFile, toDomainFiles } from "../../../infra/file/fileMapper";
-import type { File } from "../entity/File";
+import type { File, FileComment } from "../entity/File";
+import { DeleteFileCommentProps } from "../usecases/deleteFileCommentUsecase";
 import { UpdateFileCommentProps } from "../usecases/updateFileCommentUsecase";
 
 export interface CreateFileProps {
@@ -116,14 +117,26 @@ export async function updateFileFavorite(
 	}
 }
 
-export async function updateFileComment(props: UpdateFileCommentProps): Promise<boolean> {
+export async function updateFileComment(props: UpdateFileCommentProps): Promise<FileComment | null> {
     try {
-        await prisma.fileComment.create({
+        const result = await prisma.fileComment.create({
             data: { 
                 fileId: props.fileId,
                 userId: props.userId,
                 comment: props.comment,
             },
+        });
+        return result;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
+export async function deleteFileComment(props: DeleteFileCommentProps): Promise<boolean> {
+    try {
+        await prisma.fileComment.delete({
+            where: { id: props.commentId },
         });
         return true;
     } catch (error) {

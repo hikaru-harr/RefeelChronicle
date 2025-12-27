@@ -8,6 +8,7 @@ import { getFileUsecase } from "../features/files/usecases/getFileUsecase";
 import { listFilesUsecase } from "../features/files/usecases/listFilesUsecase";
 import { updateFileFavoriteUsecase } from "../features/files/usecases/updateFileFavoriteUsecase";
 import { updateFileCommentUsecase } from "../features/files/usecases/updateFileCommentUsecase";
+import { deleteFileCommentUsecase } from "../features/files/usecases/deleteFileCommentUsecase";
 
 export const fileRouter = new Hono<CheckedAppEnv>();
 
@@ -115,11 +116,34 @@ fileRouter.post(
 		const { comment } = c.req.valid("json");
 		const fileId = c.req.param("id");
 
-		const fileWithPreview = await updateFileCommentUsecase({
+		const fileComment = await updateFileCommentUsecase({
 			userId,
 			fileId,
 			comment,
 		});
-		return c.json(fileWithPreview, 200);
+		if(!fileComment) {
+			return c.json(null, 400);
+		}
+		return c.json(fileComment, 200);
+	},
+);
+
+fileRouter.delete(
+	"/:id/comment/:commentId",
+	async (c) => {
+		const { userId } = c.var.currentUser;
+
+		const fileId = c.req.param("id");
+		const commentId = c.req.param("commentId");
+
+		const fileComment = await deleteFileCommentUsecase({
+			userId,
+			fileId,
+			commentId,
+		});
+		if(!fileComment) {
+			return c.json(null, 400);
+		}
+		return c.json(fileComment, 200);
 	},
 );

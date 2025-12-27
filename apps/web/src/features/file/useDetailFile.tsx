@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { favorite, getDetail } from "../api/files";
-import type { FileItem } from "./useUploadFile";
+import type { DetailFile, FileItem } from "./useUploadFile";
 import z from "zod";
-import { comment } from "../api/files/comment";
+import { comment, deleteComment } from "../api/files/comment";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -28,7 +28,9 @@ export const useDetailFile = ({ id, file }: Props) => {
 		},
 	});
 
-	const [detailFile, setDetailFile] = useState<FileItem | null>(file ?? null);
+	const [detailFile, setDetailFile] = useState<DetailFile | null>(
+		file ? { ...file, fileComments: [] } : null,
+	);
 
 	const handleFavorite = async () => {
 		if (!detailFile) return;
@@ -54,12 +56,28 @@ export const useDetailFile = ({ id, file }: Props) => {
 			console.error(`PATCH /files/${detailFile.id}/comment`);
 			return;
 		}
+
+		setDetailFile({
+			...detailFile,
+			fileComments: [...detailFile.fileComments, result],
+		});
+		commentForm.reset();
+	};
+
+	const commentDelete = async (commentId: string) => {
+		if (!detailFile) return;
+		const result = await deleteComment({ id: detailFile.id, commentId });
+		if (!result) {
+			console.error(`DELETE /files/${detailFile.id}/comment`);
+			return;
+		}
 		const updatedFile = {
 			...detailFile,
-			fileComments: [...detailFile.fileComments, data.comment],
+			fileComments: detailFile.fileComments.filter(
+				(comment) => comment.id !== commentId,
+			),
 		};
 		setDetailFile(updatedFile);
-		commentForm.reset();
 	};
 
 	useEffect(() => {
@@ -77,6 +95,7 @@ export const useDetailFile = ({ id, file }: Props) => {
 	}, [id, file]);
 
 	return {
+		commentDelete,
 		handleFavorite,
 		detailFile,
 		onSubmitComment,
