@@ -1,7 +1,9 @@
 import type { FileKind as PrismaFileKind } from "../../../generated/prisma/enums";
 import { prisma } from "../../../infra/db/prisma";
-import { toDomainFile, toDomainFiles } from "../../../infra/file/fileMapper";
-import type { File } from "../entity/File";
+import { toDomainFile, toDomainFileComment, toDomainFiles } from "../../../infra/file/fileMapper";
+import type { File, FileComment } from "../entity/File";
+import type { DeleteFileCommentProps } from "../usecases/deleteFileCommentUsecase";
+import type { UpdateFileCommentProps } from "../usecases/updateFileCommentUsecase";
 
 export interface CreateFileProps {
 	userId: string;
@@ -10,6 +12,7 @@ export interface CreateFileProps {
 	mime: string;
 	bytes: number;
 	kind: PrismaFileKind;
+	contentHash?: string;
 }
 
 export interface GetFileByIdProps {
@@ -18,8 +21,11 @@ export interface GetFileByIdProps {
 }
 
 export async function createFile(props: CreateFileProps): Promise<File> {
-	const row = await prisma.file.create({
-		data: {
+	const row = await prisma.file.upsert({
+		where: {
+			objectKey: props.objectKey,
+		},
+		create: {
 			userId: props.userId,
 			objectKey: props.objectKey,
 			originalObjectKey: props.objectKey,
@@ -27,10 +33,19 @@ export async function createFile(props: CreateFileProps): Promise<File> {
 			mime: props.mime,
 			bytes: props.bytes,
 			kind: props.kind,
+			contentHash: props.contentHash ?? null,
+		},
+		update: {
+			userId: props.userId,
+			previewObjectKey: props.previewObjectKey,
+			mime: props.mime,
+			bytes: props.bytes,
+			kind: props.kind,
+			contentHash: props.contentHash ?? null,
 		},
 	});
 
-	return toDomainFile(row);
+	return toDomainFile({ ...row, fileComments: [] }, props.userId);
 }
 
 export async function setFilePreviewObjectKey(
@@ -66,7 +81,7 @@ export async function listFilesByUserAndMonth(
 		orderBy: { createdAt: "desc" },
 	});
 
-	return toDomainFiles(rows);
+	return toDomainFiles(rows.map((row) => ({ ...row, fileComments: [] })), props.userId);
 }
 
 export async function getFileById(
@@ -74,8 +89,11 @@ export async function getFileById(
 ): Promise<File | null> {
 	const row = await prisma.file.findUnique({
 		where: { id: props.fileId, userId: props.userId },
+		include: {
+			fileComments: true,
+		},
 	});
-	return row ? toDomainFile(row) : null;
+	return row ? toDomainFile(row, props.userId) : null;
 }
 
 export interface UpdateFileFavoriteProps {
@@ -91,6 +109,38 @@ export async function updateFileFavorite(
 		await prisma.file.update({
 			where: { id: props.fileId, userId: props.userId },
 			data: { isFavorite: props.isFavorite },
+		});
+		return true;
+	} catch (error) {
+		console.error(error);
+		return false;
+	}
+}
+
+export async function updateFileComment(
+	props: UpdateFileCommentProps,
+): Promise<FileComment | null> {
+	try {
+		const result = await prisma.fileComment.create({
+			data: {
+				fileId: props.fileId,
+				userId: props.userId,
+				comment: props.comment,
+			},
+		});
+		return toDomainFileComment(result, props.userId);
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+}
+
+export async function deleteFileComment(
+	props: DeleteFileCommentProps,
+): Promise<boolean> {
+	try {
+		await prisma.fileComment.delete({
+			where: { id: props.commentId },
 		});
 		return true;
 	} catch (error) {

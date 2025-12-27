@@ -1,9 +1,36 @@
 import type { File as DomainFile } from "../../features/files/entity/File";
-import type { Prisma } from "../../generated/prisma/client";
+import type { FileComment, Prisma } from "../../generated/prisma/client";
 
-type PrismaFile = Prisma.FileGetPayload<Prisma.FileDefaultArgs>;
+interface PrismaFileWithComments
+	extends Prisma.FileGetPayload<{
+		include: { fileComments: true };
+	}> {}
 
-export function toDomainFile(row: PrismaFile): DomainFile {
+interface FileCommentWithDelete extends FileComment {
+	canDelete: boolean;
+}
+
+export function toDomainFileComment(
+	row: PrismaFileWithComments["fileComments"][number],
+	currentUserId: string,
+): FileComment & FileCommentWithDelete {
+	const isDelete = currentUserId === row.userId;
+	return {
+		id: row.id,
+		userId: row.userId,
+		fileId: row.fileId,
+		comment: row.comment,
+		createdAt: row.createdAt,
+		updatedAt: row.updatedAt,
+
+		canDelete: isDelete,
+	};
+}
+
+export function toDomainFile(
+	row: PrismaFileWithComments,
+	currentUserId: string,
+): DomainFile {
 	return {
 		id: row.id,
 		userId: row.userId,
@@ -15,9 +42,17 @@ export function toDomainFile(row: PrismaFile): DomainFile {
 		previewObjectKey: row.previewObjectKey,
 		originalObjectKey: row.originalObjectKey,
 		createdAt: row.createdAt,
+		contentHash: row.contentHash,
+
+		fileComments: row.fileComments.map((comment) =>
+			toDomainFileComment(comment, currentUserId),
+		),
 	};
 }
 
-export function toDomainFiles(rows: PrismaFile[]): DomainFile[] {
-	return rows.map(toDomainFile);
+export function toDomainFiles(
+	rows: PrismaFileWithComments[],
+	currentUserId: string,
+): DomainFile[] {
+	return rows.map((row) => toDomainFile(row, currentUserId));
 }

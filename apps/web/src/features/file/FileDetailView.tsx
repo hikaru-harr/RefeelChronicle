@@ -1,12 +1,29 @@
 "use client";
 
 import { format } from "date-fns";
-import { ChevronLeft, MessageCircleMore, Star, Tag } from "lucide-react";
+import {
+	ChevronLeft,
+	Loader,
+	MessageCircle,
+	MessageCircleMore,
+	Send,
+	Star,
+	Tag,
+	Trash,
+} from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+	Sheet,
+	SheetContent,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger,
+} from "@/components/ui/sheet";
 import type { FileItem } from "@/features/file/useUploadFile";
-import { useLogger } from "@/lib/context/LoggerContext";
+import { useDetailFile } from "./useDetailFile";
 
 export function FileDetailView({
 	file,
@@ -17,58 +34,23 @@ export function FileDetailView({
 	onClose: () => void;
 	id?: string;
 }) {
-	const { logInfo, logError } = useLogger();
-	const [detailFile, setDetailFile] = useState<FileItem | null>(file ?? null);
-	const handleFavorite = async () => {
-		if (!detailFile) return;
-		try {
-			logInfo(`PATCH /files/${detailFile.id}/favorite start`);
-			await fetch(
-				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/${detailFile.id}/favorite`,
-				{
-					method: "PATCH",
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${localStorage.getItem("jwtToken") ?? ""}`,
-					},
-					body: JSON.stringify({ isFavorite: !detailFile.isFavorite }),
-				},
-			);
+	const {
+		detailFile,
+		handleFavorite,
+		onSubmitComment,
+		commentForm,
+		commentDelete,
+	} = useDetailFile({
+		id,
+		file,
+	});
 
-			const updatedFile = { ...detailFile, isFavorite: !detailFile.isFavorite };
-			setDetailFile(updatedFile);
-		} catch (error) {
-			logError(
-				`PATCH /files/${detailFile?.id}/favorite error: ${String(error)}`,
-			);
-		}
-	};
-
-	useEffect(() => {
-		const requestId = file?.id ?? id;
-		if (!requestId) return;
-		const init = async () => {
-			logInfo(`GET /files/${requestId} start`);
-			const result = await fetch(
-				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/${requestId}`,
-				{
-					method: "GET",
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${localStorage.getItem("jwtToken") ?? ""}`,
-					},
-				},
-			);
-			const response = await result.json();
-			if (!response) {
-				logError(`GET /files/${id} error: ${String(response)}`);
-				return;
-			}
-			setDetailFile(response.file);
-		};
-		init();
-	}, [id, file, logError, logInfo]);
-	if (!detailFile) return <div>loading...</div>;
+	if (!detailFile)
+		return (
+			<div className="animate-spin">
+				<Loader />
+			</div>
+		);
 
 	return (
 		<div className="fixed inset-0 flex items-center justify-center z-50 bg-white">
@@ -86,25 +68,58 @@ export function FileDetailView({
 
 					<div className="justify-self-end" />
 				</div>
-
-				{detailFile.kind === "video" ? (
-					// biome-ignore lint/a11y/useMediaCaption: 開発中のためキャプションは後で追加予定
-					<video
-						controls
-						preload="metadata"
-						src={detailFile.videoUrl ?? undefined}
-					/>
-				) : (
-					<Image
-						src={detailFile.previewUrl}
-						alt={detailFile.objectKey}
-						fill
-						className="object-contain"
-						sizes="100vw"
-						unoptimized
-						loading="eager"
-					/>
-				)}
+				<div>
+					{detailFile.kind === "video" ? (
+						// biome-ignore lint/a11y/useMediaCaption: 開発中のためキャプションは後で追加予定
+						<video
+							controls
+							preload="metadata"
+							src={detailFile.videoUrl ?? undefined}
+						/>
+					) : (
+						<Image
+							src={detailFile.previewUrl}
+							alt={detailFile.objectKey}
+							fill
+							className="object-contain"
+							sizes="100vw"
+							unoptimized
+							loading="eager"
+						/>
+					)}
+					<div className="absolute bottom-0 left-0 p-2 pb-4 flex w-full">
+						<div className="w-full relative">
+							<Form {...commentForm}>
+								<form
+									onSubmit={commentForm.handleSubmit(onSubmitComment)}
+									className="relative flex w-full"
+								>
+									<FormField
+										control={commentForm.control}
+										name="comment"
+										render={({ field }) => (
+											<FormItem className="w-full">
+												<FormControl>
+													<Input
+														placeholder="コメントを入力してください"
+														{...field}
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+									<Button
+										variant="ghost"
+										type="submit"
+										className="absolute right-0"
+									>
+										<Send />
+									</Button>
+								</form>
+							</Form>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<div className="absolute bottom-20 right-10 flex flex-col space-y-4 items-center justify-center">
@@ -127,12 +142,55 @@ export function FileDetailView({
 					<Tag fill="black" stroke="white" className="h-6 w-6" />
 				</button>
 
-				<button
-					type="button"
-					className="h-12 w-12 rounded-full bg-black flex items-center justify-center"
-				>
-					<MessageCircleMore fill="black" stroke="white" className="h-6 w-6" />
-				</button>
+				<Sheet>
+					<SheetTrigger className="h-12 w-12 rounded-full bg-black flex items-center justify-center">
+						{detailFile.fileComments.length > 0 ? (
+							<div className="relative">
+								<MessageCircle
+									fill="black"
+									stroke="white"
+									className="h-7 w-7"
+								/>
+								<p className="absolute top-[6px] right-[6px] w-4 h-4 rounded-full flex items-center justify-center text-white text-xs font-bold">
+									{detailFile.fileComments.length}
+								</p>
+							</div>
+						) : (
+							<MessageCircleMore
+								fill="black"
+								stroke="white"
+								className="h-6 w-6"
+							/>
+						)}
+					</SheetTrigger>
+					<SheetContent side="bottom">
+						<SheetHeader>
+							<SheetTitle className="flex items-center">
+								コメント
+								<small className="text-muted-foreground">
+									({detailFile.fileComments.length}件)
+								</small>
+							</SheetTitle>
+							{detailFile.fileComments.length > 0 ? (
+								detailFile.fileComments.map((comment) => (
+									<div key={comment.id} className="flex justify-between">
+										<p>{comment.comment}</p>
+										{comment.canDelete && (
+											<button
+												type="button"
+												onClick={() => commentDelete(comment.id)}
+											>
+												<Trash color="red" size={20} />
+											</button>
+										)}
+									</div>
+								))
+							) : (
+								<p>コメントはありません</p>
+							)}
+						</SheetHeader>
+					</SheetContent>
+				</Sheet>
 			</div>
 		</div>
 	);

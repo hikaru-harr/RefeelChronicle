@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
 import { ClientLoggerRoot } from "@/components/ClientLoggerProvider";
+import { AuthGate } from "./AuthGate";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -28,7 +29,9 @@ export default function RootLayout({
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-hidden`}
 			>
-				<ClientLoggerRoot>{children}</ClientLoggerRoot>
+				<AuthGate>
+					<ClientLoggerRoot>{children}</ClientLoggerRoot>
+				</AuthGate>
 			</body>
 		</html>
 	);

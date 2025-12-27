@@ -4,8 +4,10 @@ import { z } from "zod";
 import type { CheckedAppEnv } from "../app";
 import { compleatUploadUsecase } from "../features/files/usecases/compleatUploadUsecase";
 import { createUploadPreSignedUrlUsecase } from "../features/files/usecases/createUploadPreSignedUrlUsecase";
+import { deleteFileCommentUsecase } from "../features/files/usecases/deleteFileCommentUsecase";
 import { getFileUsecase } from "../features/files/usecases/getFileUsecase";
 import { listFilesUsecase } from "../features/files/usecases/listFilesUsecase";
+import { updateFileCommentUsecase } from "../features/files/usecases/updateFileCommentUsecase";
 import { updateFileFavoriteUsecase } from "../features/files/usecases/updateFileFavoriteUsecase";
 
 export const fileRouter = new Hono<CheckedAppEnv>();
@@ -46,6 +48,7 @@ fileRouter.patch(
 	zValidator("json", favoriteRequestSchema),
 	async (c) => {
 		const { userId } = c.var.currentUser;
+		console.log("kokoo");
 		const fileId = c.req.param("id");
 		const { isFavorite } = c.req.valid("json");
 		const isUpdated = await updateFileFavoriteUsecase({
@@ -99,3 +102,45 @@ fileRouter.post(
 		return c.json(fileWithPreview, 201);
 	},
 );
+
+const commentRequestSchema = z.object({
+	comment: z.string(),
+});
+
+fileRouter.post(
+	"/:id/comment",
+	zValidator("json", commentRequestSchema),
+	async (c) => {
+		const { userId } = c.var.currentUser;
+
+		const { comment } = c.req.valid("json");
+		const fileId = c.req.param("id");
+
+		const fileComment = await updateFileCommentUsecase({
+			userId,
+			fileId,
+			comment,
+		});
+		if (!fileComment) {
+			return c.json(null, 400);
+		}
+		return c.json(fileComment, 200);
+	},
+);
+
+fileRouter.delete("/:id/comment/:commentId", async (c) => {
+	const { userId } = c.var.currentUser;
+
+	const fileId = c.req.param("id");
+	const commentId = c.req.param("commentId");
+
+	const fileComment = await deleteFileCommentUsecase({
+		userId,
+		fileId,
+		commentId,
+	});
+	if (!fileComment) {
+		return c.json(null, 400);
+	}
+	return c.json(fileComment, 200);
+});

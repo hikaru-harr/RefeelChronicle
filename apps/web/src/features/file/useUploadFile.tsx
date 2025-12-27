@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
-import { useLogger } from "@/lib/context/LoggerContext";
 import { buildThumbForUpload } from "@/features/file/imageThumb";
+import { useLogger } from "@/lib/context/LoggerContext";
+import { uploadFileCompleat } from "../api/files/compleat";
+import { getFiles } from "../api/files/getFiles";
+import { getPreSignedUrl } from "../api/files/pre-sign";
+import { uploadFile } from "../api/files/upload";
 
 export interface FileItem {
 	id: string;
@@ -17,67 +21,28 @@ export interface FileItem {
 	videoUrl?: string;
 }
 
+export interface FileComment {
+	id: string;
+	fileId: string;
+	comment: string;
+	createdAt: Date;
+	updatedAt: Date;
+	canDelete: boolean;
+}
+
+export interface DetailFile extends FileItem {
+	fileComments: FileComment[];
+}
+
 interface Props {
 	yearMonthParam: string;
 }
 
 const useUploadFile = ({ yearMonthParam }: Props) => {
-	const { logInfo, logError } = useLogger();
+	const { logError } = useLogger();
 
 	const [isUploading, setIsUploading] = useState(false);
 	const [files, setFiles] = useState<FileItem[]>([]);
-
-	const getPreSignedUrl = async (
-		file: File,
-	): Promise<{ preSignedUrl: string; objectKey: string } | null> => {
-		logInfo(
-			`getPreSignedUrl start ${process.env.NEXT_PUBLIC_API_TARGET}/api/files/pre-sign`,
-		);
-		try {
-			const url = await fetch(
-				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/pre-sign`,
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-					},
-					body: JSON.stringify({
-						fileName: file.name,
-						fileType: file.type,
-					}),
-				},
-			);
-			logInfo(
-				`getPreSignedUrl success ${process.env.NEXT_PUBLIC_API_TARGET}/api/files/pre-sign`,
-			);
-			return await url.json();
-		} catch (error) {
-			logError(`getPreSignedUrl error: ${error}`);
-			return null;
-		}
-	};
-
-	const uploadFile = async (
-		preSignedUrl: string,
-		file: File,
-	): Promise<boolean> => {
-		logInfo(`uploadFile start ${preSignedUrl}`);
-
-		const response = await fetch(preSignedUrl, {
-			method: "PUT",
-			headers: {
-				"Content-Type": file.type,
-			},
-			body: file,
-		});
-		logInfo(`uploadFile success ${preSignedUrl}`);
-		if (!response.ok) {
-			logError(`uploadFile error ${preSignedUrl}`);
-			return false;
-		}
-		return true;
-	};
 
 	const handleSelectFiles = async (files: FileList | File[]) => {
 		setIsUploading(true);
@@ -130,25 +95,15 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 				}
 			}
 
-			const compleatResult = await fetch(
-				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files/compleat`,
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-					},
-					body: JSON.stringify({
-						objectKey: originalPresign.objectKey,
-						previewObjectKey,
-						mime: originalForUpload.type,
-						bytes: originalForUpload.size,
-						kind: isImage ? "image" : isVideo ? "video" : "other",
-					}),
-				},
-			);
+			const compleatResult = await uploadFileCompleat({
+				objectKey: originalPresign.objectKey,
+				previewObjectKey,
+				mime: originalForUpload.type,
+				bytes: originalForUpload.size,
+				kind: isImage ? "image" : isVideo ? "video" : "other",
+			});
 
-			uploadFileList.push(await compleatResult.json());
+			uploadFileList.push(compleatResult);
 		}
 
 		setFiles((prev) => [...uploadFileList, ...prev]);
@@ -157,30 +112,13 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 	};
 
 	useEffect(() => {
-		logInfo(
-			`GET /files start ${process.env.NEXT_PUBLIC_API_TARGET}/api/files?yearMonth=${yearMonthParam}?page=${1}`,
-		);
 		const init = async () => {
-			const result = await fetch(
-				`${process.env.NEXT_PUBLIC_API_TARGET}/api/files?yearMonth=${yearMonthParam}`,
-				{
-					method: "GET",
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-					},
-				},
-			);
-			const data = await result.json();
-			if (!data) {
-				setFiles([]);
-				return;
-			}
-			setFiles(data.files);
-			logInfo(`GET /files success yearMonth=${yearMonthParam}`);
+			const result = await getFiles(yearMonthParam);
+			console.log(result);
+			setFiles(result);
 		};
 		init();
-	}, [yearMonthParam, logInfo]);
+	}, [yearMonthParam]);
 
 	return {
 		files,
