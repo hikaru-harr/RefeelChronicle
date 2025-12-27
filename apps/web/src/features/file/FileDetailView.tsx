@@ -143,30 +143,25 @@ export function FileDetailView({
 				</button>
 
 				<Sheet>
-					<SheetTrigger>
-						<button
-							type="button"
-							className="h-12 w-12 rounded-full bg-black flex items-center justify-center"
-						>
-							{detailFile.fileComments.length > 0 ? (
-								<div className="relative">
-									<MessageCircle
-										fill="black"
-										stroke="white"
-										className="h-7 w-7"
-									/>
-									<p className="absolute top-[6px] right-[6px] w-4 h-4 rounded-full flex items-center justify-center text-white text-xs font-bold">
-										{detailFile.fileComments.length}
-									</p>
-								</div>
-							) : (
-								<MessageCircleMore
+					<SheetTrigger className="h-12 w-12 rounded-full bg-black flex items-center justify-center">
+						{detailFile.fileComments.length > 0 ? (
+							<div className="relative">
+								<MessageCircle
 									fill="black"
 									stroke="white"
-									className="h-6 w-6"
+									className="h-7 w-7"
 								/>
-							)}
-						</button>
+								<p className="absolute top-[6px] right-[6px] w-4 h-4 rounded-full flex items-center justify-center text-white text-xs font-bold">
+									{detailFile.fileComments.length}
+								</p>
+							</div>
+						) : (
+							<MessageCircleMore
+								fill="black"
+								stroke="white"
+								className="h-6 w-6"
+							/>
+						)}
 					</SheetTrigger>
 					<SheetContent side="bottom">
 						<SheetHeader>
@@ -180,12 +175,14 @@ export function FileDetailView({
 								detailFile.fileComments.map((comment) => (
 									<div key={comment.id} className="flex justify-between">
 										<p>{comment.comment}</p>
-										<button
-											type="button"
-											onClick={() => commentDelete(comment.id)}
-										>
-											<Trash color="red" size={20} />
-										</button>
+										{comment.canDelete && (
+											<button
+												type="button"
+												onClick={() => commentDelete(comment.id)}
+											>
+												<Trash color="red" size={20} />
+											</button>
+										)}
 									</div>
 								))
 							) : (

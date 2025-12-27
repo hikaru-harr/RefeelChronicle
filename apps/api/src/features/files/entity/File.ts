@@ -3,7 +3,6 @@ import type { FileKind as PrismaFileKind } from "../../../generated/prisma/enums
 export type FileComment = {
 	id: string;
 	fileId: string;
-	userId: string;
 	comment: string;
 	createdAt: Date;
 	updatedAt: Date;

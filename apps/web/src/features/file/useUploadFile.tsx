@@ -23,11 +23,11 @@ export interface FileItem {
 
 export interface FileComment {
 	id: string;
-	userId: string;
 	fileId: string;
 	comment: string;
 	createdAt: Date;
 	updatedAt: Date;
+	canDelete: boolean;
 }
 
 export interface DetailFile extends FileItem {
