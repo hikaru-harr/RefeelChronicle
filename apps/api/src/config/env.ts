@@ -7,6 +7,7 @@ const envSchema = z.object({
 	BUCKET_SECRET_KEY: z.string().min(1),
 	BUCKET_NAME: z.string().min(1),
 	FIREBASE_PROJECT_ID: z.string().min(1),
+	FIREBASE_ADMIN_CREDENTIAL_JSON: z.string().min(1),
 });
 
 const _env = envSchema.parse(process.env);
@@ -17,3 +18,5 @@ export const BUCKET_ACCESS_KEY = _env.BUCKET_ACCESS_KEY;
 export const BUCKET_SECRET_KEY = _env.BUCKET_SECRET_KEY;
 export const BUCKET_NAME = _env.BUCKET_NAME;
 export const FIREBASE_PROJECT_ID = _env.FIREBASE_PROJECT_ID;
+export const FIREBASE_ADMIN_CREDENTIAL_JSON = _env.FIREBASE_ADMIN_CREDENTIAL_JSON;
+
