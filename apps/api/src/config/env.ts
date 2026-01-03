@@ -7,8 +7,8 @@ const envSchema = z.object({
 	BUCKET_SECRET_KEY: z.string().min(1),
 	BUCKET_NAME: z.string().min(1),
 	FIREBASE_PROJECT_ID: z.string().min(1),
-	FIREBASE_ADMIN_CREDENTIAL_JSON: z.string().min(1),
-	FIREBASE_ADMIN_CREDENTIAL_PATH: z.string().min(1),
+	FIREBASE_ADMIN_CREDENTIAL_JSON: z.string().min(1).optional(),
+	FIREBASE_ADMIN_CREDENTIAL_PATH: z.string().min(1).optional(),
 });
 
 const _env = envSchema.parse(process.env);
