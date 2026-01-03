@@ -1,6 +1,7 @@
 .secrets
 .secrets/*
 .env*
+!.env.stg.example
 
 node_modules
 node_modules/*
