@@ -5,7 +5,7 @@ import { z } from "zod";
 import { auth } from "@/lib/firebaseClient";
 
 export const loginFormSchema = z.object({
-	email: z.email(),
+	email: z.string(),
 	password: z.string().min(8),
 });
 

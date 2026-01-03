@@ -76,3 +76,6 @@ pnpm prisma:migrate dev --name 〇〇
 
 型が参照しない時は
 pnpm prisma generate
+
+改行を一行のjsonへ
+cat stg-refeel-chronicle-1bbcebd93f16.json | jq -c . > service-account.min.json

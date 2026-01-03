@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:16
+    container_name: stg-refeel-chronicle-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - db_stg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks: [refeel_net]
+    ports:
+      - "127.0.0.1:5432:5432"
+
+networks:
+  refeel_net:
+
+volumes:
+  db_stg:
