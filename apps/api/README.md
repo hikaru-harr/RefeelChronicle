@@ -79,3 +79,28 @@ pnpm prisma generate
 
 改行を一行のjsonへ
 cat stg-refeel-chronicle-1bbcebd93f16.json | jq -c . > service-account.min.json
+
+### サーバ側のコード修正後手順
+ビルド
+- pnpm run build
+
+ビルド後の作成ファイル確認
+- ls -la ./dist | head
+
+起動確認
+- node ./dist/server.js
+
+システムサービスとして起動
+- sudo systemctl daemon-reload
+
+再起動
+- sudo systemctl restart refeel-api-stg
+
+ログ確認
+- sudo journalctl -u refeel-api-stg --since "5 min ago" --no-pager
+
+ヘルスチェック
+- curl -i http://127.0.0.1:4250/health
+
+ステージング環境ヘルスチェック
+- curl -i https://stg-api.refeel-chronicle.com/health
