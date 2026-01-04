@@ -1,0 +1,61 @@
+name: Deploy API (VPS)
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "apps/api/**"
+      - "packages/**"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/deploy-api.yml"
+
+concurrency:
+  group: deploy-api-main
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (for metadata only)
+        uses: actions/checkout@v4
+
+      - name: Start SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Add known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${{ secrets.VPS_PORT }}" "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy on VPS
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          USER: ${{ secrets.VPS_USER }}
+          PORT: ${{ secrets.VPS_PORT }}
+          APP_DIR: ${{ secrets.VPS_APP_DIR }}
+          SERVICE: refeel-api-stg
+        run: |
+          ssh -p "$PORT" "$USER@$HOST" bash -lc "set -euo pipefail
+            cd '$APP_DIR'
+            git fetch origin main
+            git reset --hard origin/main
+
+            # 依存関係 & ビルド
+            corepack enable || true
+            pnpm -v
+            pnpm install --frozen-lockfile
+            # ★ Prisma
+            pnpm -C apps/api prisma generate
+            pnpm -C apps/api prisma migrate deploy
+            
+            # build
+            pnpm -C apps/api build
+            
+            # restart
+            sudo systemctl restart '$SERVICE'
+            sudo systemctl status '$SERVICE' --no-pager
+          "

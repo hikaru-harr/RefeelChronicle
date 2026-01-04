@@ -96,8 +96,11 @@ cat stg-refeel-chronicle-1bbcebd93f16.json | jq -c . > service-account.min.json
 再起動
 - sudo systemctl restart refeel-api-stg
 
+ステータス確認
+- sudo systemctl status refeel-api-stg --no-pager
+
 ログ確認
-- sudo journalctl -u refeel-api-stg --since "5 min ago" --no-pager
+- sudo journalctl -u refeel-api-stg -f --no-pager
 
 ヘルスチェック
 - curl -i http://127.0.0.1:4250/health
