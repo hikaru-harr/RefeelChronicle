@@ -16,6 +16,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: stg
 
     steps:
       - name: Checkout (for metadata only)

@@ -17,6 +17,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: stg
 
     steps:
       - uses: actions/checkout@v4
@@ -27,9 +28,13 @@ jobs:
           node-version: "22"
           cache: "pnpm"
 
-      - name: Enable corepack + install
+      - name: Enable Corepack (pnpm)
         run: |
           corepack enable
+          pnpm -v
+
+      - name: Install dependencies
+        run: |
           pnpm install --frozen-lockfile
 
       - name: Deploy via Wrangler
