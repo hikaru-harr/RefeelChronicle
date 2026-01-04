@@ -30,14 +30,14 @@ jobs:
       - name: Add known_hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -p "${{ secrets.VPS_PORT }}" "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -p "${{ vars.VPS_PORT }}" "${{ vars.VPS_HOST }}" >> ~/.ssh/known_hosts
 
       - name: Deploy on VPS
         env:
-          HOST: ${{ secrets.VPS_HOST }}
-          USER: ${{ secrets.VPS_USER }}
-          PORT: ${{ secrets.VPS_PORT }}
-          APP_DIR: ${{ secrets.VPS_APP_DIR }}
+          HOST: ${{ vars.VPS_HOST }}
+          USER: ${{ vars.VPS_USER }}
+          PORT: ${{ vars.VPS_PORT }}
+          APP_DIR: ${{ vars.VPS_APP_DIR }}
           SERVICE: refeel-api-stg
         run: |
           ssh -p "$PORT" "$USER@$HOST" bash -lc "set -euo pipefail
