@@ -1,20 +1,20 @@
-import { FIREBASE_ADMIN_CREDENTIAL_PATH, FIREBASE_ADMIN_CREDENTIAL_JSON } from "../../config/env";
-import fs from "node:fs";
-import admin from "firebase-admin";
+import "dotenv/config";
+import { cert, getApps, initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
+import { FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY } from "../../config/env";
 
-function loadServiceAccount() {
-  if (FIREBASE_ADMIN_CREDENTIAL_PATH) {
-    return JSON.parse(fs.readFileSync(FIREBASE_ADMIN_CREDENTIAL_PATH, "utf8"));
-  }
-  if (FIREBASE_ADMIN_CREDENTIAL_JSON) {
-    return JSON.parse(FIREBASE_ADMIN_CREDENTIAL_JSON);
-  }
-  throw new Error("Missing FIREBASE_ADMIN_CREDENTIAL_PATH or _JSON");
+if (!FIREBASE_PRIVATE_KEY) {
+  throw new Error("Missing FIREBASE_PRIVATE_KEY");
 }
 
-if (admin.apps.length === 0) {
-  const cred = loadServiceAccount();
-  admin.initializeApp({ credential: admin.credential.cert(cred) });
-}
+export const firebaseAdmin = 
+  getApps()[0] ??
+  initializeApp({
+    credential: cert({
+      projectId: FIREBASE_PROJECT_ID,
+      clientEmail: FIREBASE_CLIENT_EMAIL,
+      privateKey: FIREBASE_PRIVATE_KEY,
+    }),
+});
 
-export const auth = admin.auth();
+export const auth = getAuth(firebaseAdmin);
