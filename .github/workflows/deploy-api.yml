@@ -41,6 +41,7 @@ jobs:
           SERVICE: refeel-api-stg
         run: |
           ssh -p "$PORT" "$USER@$HOST" bash -lc "set -euo pipefail
+            set -x
             cd '$APP_DIR'
             git fetch origin main
             git reset --hard origin/main
@@ -57,6 +58,6 @@ jobs:
             pnpm -C apps/api build
             
             # restart
-            sudo systemctl restart '$SERVICE'
-            sudo systemctl status '$SERVICE' --no-pager
+            sudo systemctl restart '${SERVICE}.service'
+            sudo systemctl status '${SERVICE}.service' --no-pager
           "
