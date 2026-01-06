@@ -54,7 +54,7 @@ export async function generateVideoThumbnail(
 	await runFfmpeg([
 		"-y",
 		"-ss",
-		"00:00:01",
+		"00:00:00.10",
 		"-i",
 		tmpVideoPath,
 		"-frames:v",
