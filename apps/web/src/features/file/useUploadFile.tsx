@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
 import { buildThumbForUpload } from "@/features/file/imageThumb";
 import { useLogger } from "@/lib/context/LoggerContext";
 import { uploadFileCompleat } from "../api/files/compleat";
@@ -41,11 +43,13 @@ interface Props {
 const useUploadFile = ({ yearMonthParam }: Props) => {
 	const { logError } = useLogger();
 
+	const completeCount = useRef<number>(0);
 	const [isUploading, setIsUploading] = useState(false);
 	const [files, setFiles] = useState<FileItem[]>([]);
 
 	const handleSelectFiles = async (files: FileList | File[]) => {
 		setIsUploading(true);
+		const id = uuidv4();
 		const fileList = Array.from(files);
 		console.log(fileList);
 		if (fileList.length === 0) {
@@ -55,6 +59,10 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 		}
 		const uploadFileList: FileItem[] = [];
 		for (const file of fileList) {
+			toast(
+				`${completeCount.current}/${fileList.length} アップロードが完了しました。`,
+				{ id },
+			);
 			const isImage =
 				file.type.startsWith("image/") ||
 				file.name.toLowerCase().endsWith(".heic") ||
@@ -80,35 +88,50 @@ const useUploadFile = ({ yearMonthParam }: Props) => {
 				originalForUpload,
 			);
 			if (!originalUploadOk) {
+				// TODO: エラー表示
+				logError(`originalUploadOk error: ${originalPresign.objectKey}`);
 				continue;
 			}
 
-			let previewObjectKey = originalPresign.objectKey;
-			if (thumbForUpload) {
-				const thumbPresign = await getPreSignedUrl(thumbForUpload);
-				if (thumbPresign) {
-					const thumbUploadOk = await uploadFile(
-						thumbPresign.preSignedUrl,
-						thumbForUpload,
-					);
-					if (thumbUploadOk) previewObjectKey = thumbPresign.objectKey;
-				}
+			if (!thumbForUpload) {
+				logError("サムネイルの作成に失敗しました。");
+				setIsUploading(false);
+				continue;
+			}
+			const thumbPresign = await getPreSignedUrl(thumbForUpload);
+
+			if (!thumbPresign) {
+				logError("サムネイルのアップロードに失敗しました。");
+				setIsUploading(false);
+				continue;
+			}
+			const thumbUploadOk = await uploadFile(
+				thumbPresign.preSignedUrl,
+				thumbForUpload,
+			);
+			if (!thumbUploadOk) {
+				logError(`thumbUploadOk error: ${thumbPresign.objectKey}`);
+				setIsUploading(false);
+				continue;
 			}
 
 			const compleatResult = await uploadFileCompleat({
 				objectKey: originalPresign.objectKey,
-				previewObjectKey,
+				previewObjectKey: thumbPresign.objectKey,
 				mime: originalForUpload.type,
 				bytes: originalForUpload.size,
 				kind: isImage ? "image" : isVideo ? "video" : "other",
 			});
 
 			uploadFileList.push(compleatResult);
+			completeCount.current++;
 		}
 
 		setFiles((prev) => [...uploadFileList, ...prev]);
 
 		setIsUploading(false);
+		toast.success("アップロードが完了しました。", { id });
+		completeCount.current = 0;
 	};
 
 	useEffect(() => {

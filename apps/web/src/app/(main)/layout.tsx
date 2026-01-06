@@ -1,4 +1,5 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Toaster } from "@/components/ui/sonner";
 
 function layout({ children }: { children: React.ReactNode }) {
 	return (
@@ -10,6 +11,7 @@ function layout({ children }: { children: React.ReactNode }) {
 				{children}
 				<ScrollBar />
 			</ScrollArea>
+			<Toaster position="top-center" />
 		</div>
 	);
 }
