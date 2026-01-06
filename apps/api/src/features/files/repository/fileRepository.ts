@@ -1,6 +1,10 @@
 import type { FileKind as PrismaFileKind } from "../../../generated/prisma/enums";
 import { prisma } from "../../../infra/db/prisma";
-import { toDomainFile, toDomainFileComment, toDomainFiles } from "../../../infra/file/fileMapper";
+import {
+	toDomainFile,
+	toDomainFileComment,
+	toDomainFiles,
+} from "../../../infra/file/fileMapper";
 import type { File, FileComment } from "../entity/File";
 import type { DeleteFileCommentProps } from "../usecases/deleteFileCommentUsecase";
 import type { UpdateFileCommentProps } from "../usecases/updateFileCommentUsecase";
@@ -81,7 +85,10 @@ export async function listFilesByUserAndMonth(
 		orderBy: { createdAt: "desc" },
 	});
 
-	return toDomainFiles(rows.map((row) => ({ ...row, fileComments: [] })), props.userId);
+	return toDomainFiles(
+		rows.map((row) => ({ ...row, fileComments: [] })),
+		props.userId,
+	);
 }
 
 export async function getFileById(

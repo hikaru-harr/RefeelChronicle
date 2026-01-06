@@ -1,64 +1,64 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "main": ".open-next/worker.js",
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"main": ".open-next/worker.js",
 
-  // ベース
-  "name": "refeel-chronicle-web",
+	// ベース
+	"name": "refeel-chronicle-web",
 
-  "compatibility_date": "2025-12-30",
-  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+	"compatibility_date": "2025-12-30",
+	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
 
-  "assets": {
-    "directory": ".open-next/assets",
-    "binding": "ASSETS"
-  },
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
 
-  "observability": { "enabled": true },
+	"observability": { "enabled": true },
 
-  // open-next の Self reference は「実際にデプロイされる worker 名」と一致させる必要があるので env 側に置く
-  "env": {
-    "stg": {
-      "name": "stg-refeel-chronicle-web",
+	// open-next の Self reference は「実際にデプロイされる worker 名」と一致させる必要があるので env 側に置く
+	"env": {
+		"stg": {
+			"name": "stg-refeel-chronicle-web",
 
-      "services": [
-        {
-          "binding": "WORKER_SELF_REFERENCE",
-          "service": "stg-refeel-chronicle-web"
-        }
-      ],
+			"services": [
+				{
+					"binding": "WORKER_SELF_REFERENCE",
+					"service": "stg-refeel-chronicle-web"
+				}
+			],
 
-      "r2_buckets": [
-        // open-next incremental cache 用（stg）
-        {
-          "binding": "NEXT_INC_CACHE_R2_BUCKET",
-          "bucket_name": "stg-refeel-chronicle"
-        },
-        // あなたのアプリ用（stg）
-        { "binding": "R2", "bucket_name": "stg-refeel-chronicle" }
-      ],
-	  "images": { "binding": "IMAGES" },
-    },
+			"r2_buckets": [
+				// open-next incremental cache 用（stg）
+				{
+					"binding": "NEXT_INC_CACHE_R2_BUCKET",
+					"bucket_name": "stg-refeel-chronicle"
+				},
+				// あなたのアプリ用（stg）
+				{ "binding": "R2", "bucket_name": "stg-refeel-chronicle" }
+			],
+			"images": { "binding": "IMAGES" }
+		},
 
-    "prd": {
-      "name": "refeel-chronicle-web",
+		"prd": {
+			"name": "refeel-chronicle-web",
 
-      "services": [
-        {
-          "binding": "WORKER_SELF_REFERENCE",
-          "service": "refeel-chronicle-web"
-        }
-      ],
+			"services": [
+				{
+					"binding": "WORKER_SELF_REFERENCE",
+					"service": "refeel-chronicle-web"
+				}
+			],
 
-      "r2_buckets": [
-        // open-next incremental cache 用（prd）
-        {
-          "binding": "NEXT_INC_CACHE_R2_BUCKET",
-          "bucket_name": "refeel-chronicle"
-        },
-        // あなたのアプリ用（prd）
-        { "binding": "R2", "bucket_name": "refeel-chronicle" }
-      ],
-	  "images": { "binding": "IMAGES" },
-    }
-  }
+			"r2_buckets": [
+				// open-next incremental cache 用（prd）
+				{
+					"binding": "NEXT_INC_CACHE_R2_BUCKET",
+					"bucket_name": "refeel-chronicle"
+				},
+				// あなたのアプリ用（prd）
+				{ "binding": "R2", "bucket_name": "refeel-chronicle" }
+			],
+			"images": { "binding": "IMAGES" }
+		}
+	}
 }
